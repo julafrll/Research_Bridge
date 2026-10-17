@@ -59,6 +59,7 @@ export function AdminCourses() {
     title: '',
     description: '',
     text_content: '',
+    video_url: '',
     duration_minutes: 0,
     learning_objectives: '',
   });
@@ -191,6 +192,7 @@ export function AdminCourses() {
       title: '',
       description: '',
       text_content: '',
+      video_url: '',
       duration_minutes: 0,
       learning_objectives: '',
     });
@@ -204,6 +206,7 @@ export function AdminCourses() {
       title: lesson.title,
       description: lesson.description,
       text_content: lesson.text_content,
+      video_url: lesson.video_url ?? '',
       duration_minutes: lesson.duration_minutes,
       learning_objectives: lesson.learning_objectives.join('\n'),
     });
@@ -226,6 +229,7 @@ export function AdminCourses() {
           title: lessonForm.title,
           description: lessonForm.description,
           text_content: lessonForm.text_content,
+          video_url: lessonForm.video_url.trim() || null,
           duration_minutes: lessonForm.duration_minutes,
           learning_objectives: objectives,
         })
@@ -238,6 +242,7 @@ export function AdminCourses() {
           title: lessonForm.title,
           description: lessonForm.description,
           text_content: lessonForm.text_content,
+          video_url: lessonForm.video_url.trim() || null,
           duration_minutes: lessonForm.duration_minutes,
           learning_objectives: objectives,
         });
@@ -437,6 +442,13 @@ export function AdminCourses() {
               value={lessonForm.description}
               onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
               placeholder="Short summary of this lesson..."
+            />
+            <Input
+              label="Video URL"
+              value={lessonForm.video_url}
+              onChange={(e) => setLessonForm({ ...lessonForm, video_url: e.target.value })}
+              placeholder="Paste a Google Drive share link or direct video URL..."
+              hint="For Google Drive: open the file, click Share, copy the link. It must be set to 'Anyone with the link can view'."
             />
             <Textarea
               label="Text Content"

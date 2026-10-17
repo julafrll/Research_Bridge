@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { VideoPlayer } from '@/components/VideoPlayer';
 import {
   Card,
   CardBody,
@@ -381,7 +382,7 @@ export function StudentCourseDetail() {
             <div className="max-h-[70vh] overflow-y-auto px-6 py-4 space-y-4">
               {selectedLesson.video_url ? (
                 <div className="aspect-video rounded-lg overflow-hidden bg-navy-900">
-                  <video src={selectedLesson.video_url} controls className="h-full w-full" />
+                  <VideoPlayer url={selectedLesson.video_url} />
                 </div>
               ) : (
                 <div className="aspect-video rounded-lg bg-gradient-to-br from-navy-700 to-navy-900 flex items-center justify-center">
