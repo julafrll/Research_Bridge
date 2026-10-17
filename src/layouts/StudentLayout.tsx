@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
-  BookOpen,
+  GraduationCap,
   FileText,
   Inbox,
   Microscope,
@@ -26,7 +26,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-  { label: 'Learn', path: '/learn', icon: BookOpen },
+  { label: 'Research Bridge Program', path: '/learn', icon: GraduationCap },
   { label: 'Assignments', path: '/assignments', icon: FileText },
   { label: 'My Submissions', path: '/my-submissions', icon: Inbox },
   { label: 'Research Hub', path: '/research-hub', icon: Microscope },

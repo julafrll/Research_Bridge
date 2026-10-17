@@ -5,12 +5,17 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
-  Circle,
   PlayCircle,
   Clock,
-  FileText,
-  Microscope,
   Plus,
+  ClipboardCheck,
+  FileText,
+  Link as LinkIcon,
+  Upload,
+  Calendar,
+  Award,
+  Send,
+  X,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
@@ -25,8 +30,11 @@ import {
   ProgressBar,
   EmptyState,
   LoadingPage,
+  Textarea,
+  Input,
 } from '@/components/ui';
-import type { Course, Module, Lesson, LessonProgress, Enrollment } from '@/types';
+import type { Course, Module, Lesson, LessonProgress, Enrollment, Assignment, Submission } from '@/types';
+import { formatDate, daysUntil, isOverdue } from '@/lib/utils';
 
 export function StudentLearn() {
   const { user } = useAuth();
@@ -76,7 +84,7 @@ export function StudentLearn() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-navy-900">Learn</h1>
+        <h1 className="text-2xl font-bold text-navy-900">Research Bridge Program</h1>
         <p className="mt-1 text-sm text-muted-500">
           Browse available courses and continue your learning journey.
         </p>
@@ -138,6 +146,11 @@ export function StudentLearn() {
   );
 }
 
+interface AssignmentWithSubmission {
+  assignment: Assignment;
+  submission: Submission | null;
+}
+
 export function StudentCourseDetail() {
   const { courseId } = useParams<{ courseId: string }>();
   const { user } = useAuth();
@@ -147,6 +160,7 @@ export function StudentCourseDetail() {
   const [modules, setModules] = useState<Module[]>([]);
   const [lessonsByModule, setLessonsByModule] = useState<Record<string, Lesson[]>>({});
   const [progressMap, setProgressMap] = useState<Record<string, boolean>>({});
+  const [assignmentsByLesson, setAssignmentsByLesson] = useState<Record<string, AssignmentWithSubmission[]>>({});
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
   useEffect(() => {
@@ -195,7 +209,6 @@ export function StudentCourseDetail() {
     }
     setLessonsByModule(lessonsMap);
 
-    // Get progress for all lessons
     if (allLessonIds.length > 0) {
       const { data: progressData } = await supabase
         .from('lesson_progress')
@@ -207,6 +220,35 @@ export function StudentCourseDetail() {
         progress[p.lesson_id] = p.completed;
       });
       setProgressMap(progress);
+
+      const { data: assignmentData } = await supabase
+        .from('assignments')
+        .select('*')
+        .in('lesson_id', allLessonIds)
+        .eq('is_published', true)
+        .order('created_at', { ascending: true });
+      const assignmentList = (assignmentData as Assignment[] | null) ?? [];
+
+      const assignmentIds = assignmentList.map((a) => a.id);
+      let submissionMap: Record<string, Submission> = {};
+      if (assignmentIds.length > 0) {
+        const { data: submissionData } = await supabase
+          .from('submissions')
+          .select('*')
+          .eq('user_id', user.id)
+          .in('assignment_id', assignmentIds);
+        (submissionData as Submission[] | null)?.forEach((s) => {
+          submissionMap[s.assignment_id] = s;
+        });
+      }
+
+      const byLesson: Record<string, AssignmentWithSubmission[]> = {};
+      for (const a of assignmentList) {
+        if (!a.lesson_id) continue;
+        if (!byLesson[a.lesson_id]) byLesson[a.lesson_id] = [];
+        byLesson[a.lesson_id].push({ assignment: a, submission: submissionMap[a.id] ?? null });
+      }
+      setAssignmentsByLesson(byLesson);
     }
 
     setLoading(false);
@@ -315,41 +357,53 @@ export function StudentCourseDetail() {
                   {lessons.length === 0 ? (
                     <p className="text-sm text-muted-400">No lessons in this module yet.</p>
                   ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {lessons.map((lesson) => {
                         const isCompleted = progressMap[lesson.id] ?? false;
+                        const lessonAssignments = assignmentsByLesson[lesson.id] ?? [];
                         return (
-                          <div
-                            key={lesson.id}
-                            className="flex items-center justify-between rounded-lg border border-muted-200 p-3 transition-all hover:border-navy-300"
-                          >
-                            <button
-                              onClick={() => setSelectedLesson(lesson)}
-                              className="flex flex-1 items-center gap-3 text-left"
-                            >
-                              {isCompleted ? (
-                                <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-success-600" />
-                              ) : (
-                                <PlayCircle className="h-5 w-5 flex-shrink-0 text-navy-400" />
-                              )}
-                              <div>
-                                <p className={`text-sm font-medium ${isCompleted ? 'text-muted-500' : 'text-navy-900'}`}>
-                                  {lesson.title}
-                                </p>
-                                {lesson.duration_minutes > 0 && (
-                                  <p className="text-xs text-muted-400 flex items-center gap-1 mt-0.5">
-                                    <Clock className="h-3 w-3" />
-                                    {lesson.duration_minutes} min
-                                  </p>
+                          <div key={lesson.id} className="rounded-lg border border-muted-200 overflow-hidden">
+                            <div className="flex items-center justify-between p-3 transition-all hover:border-navy-300">
+                              <button
+                                onClick={() => setSelectedLesson(lesson)}
+                                className="flex flex-1 items-center gap-3 text-left"
+                              >
+                                {isCompleted ? (
+                                  <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-success-600" />
+                                ) : (
+                                  <PlayCircle className="h-5 w-5 flex-shrink-0 text-navy-400" />
                                 )}
+                                <div>
+                                  <p className={`text-sm font-medium ${isCompleted ? 'text-muted-500' : 'text-navy-900'}`}>
+                                    {lesson.title}
+                                  </p>
+                                  {lesson.duration_minutes > 0 && (
+                                    <p className="text-xs text-muted-400 flex items-center gap-1 mt-0.5">
+                                      <Clock className="h-3 w-3" />
+                                      {lesson.duration_minutes} min
+                                    </p>
+                                  )}
+                                </div>
+                              </button>
+                              <button
+                                onClick={() => toggleLessonComplete(lesson.id, isCompleted)}
+                                className="rounded-lg px-3 py-1.5 text-xs font-medium text-navy-600 transition-colors hover:bg-navy-50"
+                              >
+                                {isCompleted ? 'Mark incomplete' : 'Mark complete'}
+                              </button>
+                            </div>
+
+                            {lessonAssignments.length > 0 && (
+                              <div className="border-t border-muted-100 bg-muted-50/50 px-3 py-2.5 space-y-2">
+                                {lessonAssignments.map(({ assignment, submission }) => (
+                                  <InlineAssignmentRow
+                                    key={assignment.id}
+                                    assignment={assignment}
+                                    submission={submission}
+                                  />
+                                ))}
                               </div>
-                            </button>
-                            <button
-                              onClick={() => toggleLessonComplete(lesson.id, isCompleted)}
-                              className="rounded-lg px-3 py-1.5 text-xs font-medium text-navy-600 transition-colors hover:bg-navy-50"
-                            >
-                              {isCompleted ? 'Mark incomplete' : 'Mark complete'}
-                            </button>
+                            )}
                           </div>
                         );
                       })}
@@ -362,76 +416,314 @@ export function StudentCourseDetail() {
         </div>
       )}
 
-      {/* Lesson viewer modal */}
       {selectedLesson && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-navy-950/40 backdrop-blur-sm"
-            onClick={() => setSelectedLesson(null)}
-          />
-          <div className="relative z-10 w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-xl bg-white shadow-elevated animate-slide-up">
-            <div className="border-b border-muted-200 px-6 py-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-navy-900">{selectedLesson.title}</h2>
-              <button
-                onClick={() => setSelectedLesson(null)}
-                className="rounded-lg p-1.5 text-muted-400 hover:bg-muted-100"
-              >
-                <ArrowLeft className="h-5 w-5 rotate-45" />
-              </button>
-            </div>
-            <div className="max-h-[70vh] overflow-y-auto px-6 py-4 space-y-4">
-              {selectedLesson.video_url ? (
-                <div className="aspect-video rounded-lg overflow-hidden bg-navy-900">
-                  <VideoPlayer url={selectedLesson.video_url} />
-                </div>
-              ) : (
-                <div className="aspect-video rounded-lg bg-gradient-to-br from-navy-700 to-navy-900 flex items-center justify-center">
-                  <PlayCircle className="h-12 w-12 text-white/30" />
-                </div>
-              )}
+        <LessonModal
+          lesson={selectedLesson}
+          onClose={() => setSelectedLesson(null)}
+          isCompleted={progressMap[selectedLesson.id] ?? false}
+          onToggleComplete={() => {
+            if (!user) return;
+            toggleLessonComplete(selectedLesson.id, progressMap[selectedLesson.id] ?? false);
+            setSelectedLesson(null);
+          }}
+        />
+      )}
+    </div>
+  );
+}
 
-              {selectedLesson.description && (
-                <p className="text-sm text-muted-600">{selectedLesson.description}</p>
-              )}
+function assignmentStatusBadge(assignment: Assignment, submission: Submission | null) {
+  if (submission?.status === 'graded') {
+    return <Badge variant="success"><Award className="mr-1 h-3 w-3" /> Graded</Badge>;
+  }
+  if (submission?.status === 'submitted' || submission?.status === 'under_review') {
+    return <Badge variant="neutral"><CheckCircle2 className="mr-1 h-3 w-3" /> Submitted</Badge>;
+  }
+  if (submission?.status === 'revision_requested') {
+    return <Badge variant="warning"><ClipboardCheck className="mr-1 h-3 w-3" /> Revision needed</Badge>;
+  }
+  if (assignment.deadline && isOverdue(assignment.deadline)) {
+    return <Badge variant="error"><Clock className="mr-1 h-3 w-3" /> Overdue</Badge>;
+  }
+  return <Badge variant="neutral"><FileText className="mr-1 h-3 w-3" /> Not started</Badge>;
+}
 
-              {selectedLesson.learning_objectives.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-semibold text-navy-900 mb-2">Learning Objectives</h4>
-                  <ul className="space-y-1.5">
-                    {selectedLesson.learning_objectives.map((obj, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-muted-600">
-                        <CheckCircle2 className="h-4 w-4 mt-0.5 flex-shrink-0 text-success-500" />
-                        {obj}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+function InlineAssignmentRow({
+  assignment,
+  submission,
+}: {
+  assignment: Assignment;
+  submission: Submission | null;
+}) {
+  const [open, setOpen] = useState(false);
 
-              {selectedLesson.text_content && (
-                <div>
-                  <h4 className="text-sm font-semibold text-navy-900 mb-2">Lesson Content</h4>
-                  <div className="prose prose-sm max-w-none text-muted-600 whitespace-pre-wrap">
-                    {selectedLesson.text_content}
-                  </div>
-                </div>
+  return (
+    <div className="rounded-md border border-muted-200 bg-white overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors hover:bg-muted-50"
+      >
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-navy-100">
+            <ClipboardCheck className="h-3.5 w-3.5 text-navy-700" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-navy-900 truncate">{assignment.title}</p>
+            <div className="flex items-center gap-2 text-xs text-muted-400 mt-0.5">
+              <span>{assignment.max_score} pts</span>
+              {assignment.deadline && (
+                <span className="flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  Due {formatDate(assignment.deadline)}
+                </span>
               )}
-
-              <div className="flex justify-end pt-4 border-t border-muted-200">
-                <Button
-                  onClick={() => {
-                    if (!user) return;
-                    toggleLessonComplete(selectedLesson.id, progressMap[selectedLesson.id] ?? false);
-                    setSelectedLesson(null);
-                  }}
-                >
-                  {progressMap[selectedLesson.id] ? 'Mark as Incomplete' : 'Mark as Complete'}
-                </Button>
-              </div>
             </div>
           </div>
         </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {assignmentStatusBadge(assignment, submission)}
+          {open ? <X className="h-3.5 w-3.5 text-muted-400" /> : <ArrowRight className="h-3.5 w-3.5 text-muted-400" />}
+        </div>
+      </button>
+
+      {open && (
+        <AssignmentSubmissionPanel
+          assignment={assignment}
+          submission={submission}
+          onSubmitted={() => { /* state refresh handled at page level on next load */ }}
+        />
       )}
+    </div>
+  );
+}
+
+function AssignmentSubmissionPanel({
+  assignment,
+  submission,
+  onSubmitted,
+}: {
+  assignment: Assignment;
+  submission: Submission | null;
+  onSubmitted: () => void;
+}) {
+  const { user } = useAuth();
+  const [textResponse, setTextResponse] = useState(submission?.text_response ?? '');
+  const [externalLink, setExternalLink] = useState(submission?.external_link ?? '');
+  const [saving, setSaving] = useState(false);
+  const [savedMessage, setSavedMessage] = useState<string | null>(null);
+
+  const isGraded = submission?.status === 'graded';
+  const isSubmitted = submission?.status === 'submitted' || submission?.status === 'under_review';
+  const isLocked = isGraded || isSubmitted;
+
+  const handleSave = async (status: 'in_progress' | 'submitted') => {
+    if (!user) return;
+    setSaving(true);
+    setSavedMessage(null);
+
+    const now = new Date().toISOString();
+    const isLate = assignment.deadline ? isOverdue(assignment.deadline) : false;
+
+    if (submission) {
+      await supabase
+        .from('submissions')
+        .update({
+          text_response: textResponse,
+          external_link: externalLink,
+          status,
+          submitted_at: status === 'submitted' ? now : submission.submitted_at,
+          is_late: status === 'submitted' ? isLate : submission.is_late,
+        })
+        .eq('id', submission.id);
+    } else {
+      await supabase.from('submissions').insert({
+        user_id: user.id,
+        assignment_id: assignment.id,
+        text_response: textResponse,
+        external_link: externalLink,
+        status,
+        submitted_at: status === 'submitted' ? now : null,
+        is_late: status === 'submitted' ? isLate : false,
+      });
+    }
+
+    setSaving(false);
+    setSavedMessage(status === 'submitted' ? 'Assignment submitted successfully!' : 'Progress saved.');
+    onSubmitted();
+  };
+
+  const fmt = assignment.submission_format;
+
+  return (
+    <div className="border-t border-muted-100 px-3 py-3 space-y-3">
+      {assignment.instructions && (
+        <div className="rounded-md bg-muted-50 px-3 py-2">
+          <p className="text-xs font-semibold text-muted-500 mb-1">Instructions</p>
+          <p className="text-sm text-muted-700 whitespace-pre-wrap">{assignment.instructions}</p>
+        </div>
+      )}
+
+      {isGraded && submission && (
+        <div className="rounded-md bg-success-50 border border-success-200 px-3 py-2">
+          <p className="text-xs font-semibold text-success-700 mb-0.5">Graded</p>
+          <p className="text-sm text-success-800">Your submission has been graded. Check My Submissions for feedback.</p>
+        </div>
+      )}
+
+      {isSubmitted && !isGraded && (
+        <div className="rounded-md bg-navy-50 border border-navy-200 px-3 py-2">
+          <p className="text-sm text-navy-700">This assignment has been submitted and is awaiting review.</p>
+        </div>
+      )}
+
+      {!isLocked && (
+        <>
+          {(fmt === 'text' || fmt === 'any') && (
+            <div>
+              <label className="text-xs font-semibold text-muted-500 mb-1 block">Written Response</label>
+              <Textarea
+                value={textResponse}
+                onChange={(e) => setTextResponse(e.target.value)}
+                placeholder="Type your response here..."
+                className="min-h-[100px]"
+              />
+            </div>
+          )}
+
+          {(fmt === 'link' || fmt === 'any') && (
+            <div>
+              <label className="text-xs font-semibold text-muted-500 mb-1 block flex items-center gap-1">
+                <LinkIcon className="h-3 w-3" /> External Link
+              </label>
+              <Input
+                value={externalLink}
+                onChange={(e) => setExternalLink(e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+          )}
+
+          {fmt === 'file' && (
+            <div className="rounded-md border-2 border-dashed border-muted-200 px-4 py-6 text-center">
+              <Upload className="h-6 w-6 text-muted-400 mx-auto mb-2" />
+              <p className="text-sm text-muted-500">File upload will be available here.</p>
+              <p className="text-xs text-muted-400 mt-1">
+                Max {assignment.max_upload_size_mb}MB
+                {assignment.allowed_file_types.length > 0 &&
+                  ` · ${assignment.allowed_file_types.join(', ')}`}
+              </p>
+            </div>
+          )}
+
+          {savedMessage && (
+            <p className="text-sm font-medium text-success-600">{savedMessage}</p>
+          )}
+
+          <div className="flex items-center gap-2 pt-1">
+            <Button size="sm" variant="secondary" onClick={() => handleSave('in_progress')} disabled={saving}>
+              Save Draft
+            </Button>
+            <Button size="sm" onClick={() => handleSave('submitted')} disabled={saving}>
+              <Send className="h-3.5 w-3.5" /> Submit Assignment
+            </Button>
+          </div>
+        </>
+      )}
+
+      {isLocked && (textResponse || externalLink) && (
+        <div className="space-y-1.5">
+          {textResponse && (
+            <div>
+              <p className="text-xs font-semibold text-muted-500 mb-0.5">Your Response</p>
+              <p className="text-sm text-muted-700 whitespace-pre-wrap rounded-md bg-muted-50 px-3 py-2">{textResponse}</p>
+            </div>
+          )}
+          {externalLink && (
+            <div>
+              <p className="text-xs font-semibold text-muted-500 mb-0.5">Your Link</p>
+              <a href={externalLink} target="_blank" rel="noopener noreferrer" className="text-sm text-navy-600 hover:underline break-all">
+                {externalLink}
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LessonModal({
+  lesson,
+  onClose,
+  isCompleted,
+  onToggleComplete,
+}: {
+  lesson: Lesson;
+  onClose: () => void;
+  isCompleted: boolean;
+  onToggleComplete: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div
+        className="absolute inset-0 bg-navy-950/40 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="relative z-10 w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-xl bg-white shadow-elevated animate-slide-up">
+        <div className="border-b border-muted-200 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-navy-900">{lesson.title}</h2>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-muted-400 hover:bg-muted-100"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="max-h-[70vh] overflow-y-auto px-6 py-4 space-y-4">
+          {lesson.video_url ? (
+            <div className="aspect-video rounded-lg overflow-hidden bg-navy-900">
+              <VideoPlayer url={lesson.video_url} />
+            </div>
+          ) : (
+            <div className="aspect-video rounded-lg bg-gradient-to-br from-navy-700 to-navy-900 flex items-center justify-center">
+              <PlayCircle className="h-12 w-12 text-white/30" />
+            </div>
+          )}
+
+          {lesson.description && (
+            <p className="text-sm text-muted-600">{lesson.description}</p>
+          )}
+
+          {lesson.learning_objectives.length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold text-navy-900 mb-2">Learning Objectives</h4>
+              <ul className="space-y-1.5">
+                {lesson.learning_objectives.map((obj, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-muted-600">
+                    <CheckCircle2 className="h-4 w-4 mt-0.5 flex-shrink-0 text-success-500" />
+                    {obj}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {lesson.text_content && (
+            <div>
+              <h4 className="text-sm font-semibold text-navy-900 mb-2">Lesson Content</h4>
+              <div className="prose prose-sm max-w-none text-muted-600 whitespace-pre-wrap">
+                {lesson.text_content}
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-end pt-4 border-t border-muted-200">
+            <Button onClick={onToggleComplete}>
+              {isCompleted ? 'Mark as Incomplete' : 'Mark as Complete'}
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
