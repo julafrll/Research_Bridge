@@ -27,14 +27,11 @@ export function VideoPlayer({ url }: VideoPlayerProps) {
 
   const driveId = getGoogleDriveFileId(url);
   if (driveId) {
+    const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/drive-proxy?id=${driveId}`;
     return (
-      <iframe
-        src={`https://drive.google.com/file/d/${driveId}/preview`}
-        allow="autoplay; encrypted-media"
-        allowFullScreen
-        className="h-full w-full"
-        title="Lesson video"
-      />
+      <video controls className="h-full w-full" preload="metadata">
+        <source src={proxyUrl} type="video/mp4" />
+      </video>
     );
   }
 
