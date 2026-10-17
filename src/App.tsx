@@ -20,6 +20,7 @@ import { AdminLayout } from '@/layouts/AdminLayout';
 import { AdminOverview } from '@/pages/admin/AdminOverview';
 import { AdminStudents } from '@/pages/admin/AdminStudents';
 import { AdminCourses } from '@/pages/admin/AdminCourses';
+import { AdminAssignments } from '@/pages/admin/AdminAssignments';
 
 // Placeholder
 import { PlaceholderPage } from '@/pages/PlaceholderPage';
@@ -76,7 +77,7 @@ function AppRoutes() {
         <Route path="/admin" element={<AdminOverview />} />
         <Route path="/admin/students" element={<AdminStudents />} />
         <Route path="/admin/courses" element={<AdminCourses />} />
-        <Route path="/admin/assignments" element={<PlaceholderPage title="Assignments" description="Create and manage assignments." icon={<FileText className="h-6 w-6" />} />} />
+        <Route path="/admin/assignments" element={<AdminAssignments />} />
         <Route path="/admin/submissions" element={<PlaceholderPage title="Submissions" description="Review and grade student submissions." icon={<Inbox className="h-6 w-6" />} />} />
         <Route path="/admin/research-hub" element={<PlaceholderPage title="Research Hub" description="Publish and manage research resources." icon={<Microscope className="h-6 w-6" />} />} />
         <Route path="/admin/announcements" element={<PlaceholderPage title="Announcements" description="Publish announcements to students." icon={<Megaphone className="h-6 w-6" />} />} />
