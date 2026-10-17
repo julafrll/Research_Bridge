@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { GraduationCap, AlertCircle, ShieldCheck, Info } from 'lucide-react';
+import { AlertCircle, ShieldCheck, Info } from 'lucide-react';
 import { Button, Input, Alert } from '@/components/ui';
 import { supabase } from '@/lib/supabase';
+import { BrandLogo } from '@/components/BrandLogo';
 
 export function AdminSetupPage() {
   const navigate = useNavigate();
@@ -64,12 +65,9 @@ export function AdminSetupPage() {
       <div className="flex min-h-screen flex-col bg-muted-50">
         <div className="flex flex-1 items-center justify-center px-4 py-12">
           <div className="w-full max-w-md">
-            <Link to="/" className="mb-8 flex items-center justify-center gap-2.5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-navy-900">
-                <GraduationCap className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-semibold text-navy-900">Research Bridge</span>
-            </Link>
+            <div className="mb-8 flex justify-center">
+              <BrandLogo size="md" showTagline />
+            </div>
 
             <div className="card rounded-xl p-8 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-success-50">
@@ -99,12 +97,9 @@ export function AdminSetupPage() {
     <div className="flex min-h-screen flex-col bg-muted-50">
       <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <Link to="/" className="mb-8 flex items-center justify-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-navy-900">
-              <GraduationCap className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-semibold text-navy-900">Research Bridge</span>
-          </Link>
+          <div className="mb-8 flex justify-center">
+            <BrandLogo size="md" showTagline />
+          </div>
 
           <div className="card rounded-xl p-8">
             <div className="mb-4 flex items-center gap-3">
