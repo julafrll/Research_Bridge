@@ -8,6 +8,7 @@ import {
   Users,
   Microscope,
   CheckCircle2,
+  PlayCircle,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui';
@@ -124,7 +125,21 @@ export function LandingPage() {
                         Lesson 4: Literature Reviews
                       </span>
                     </div>
-                    <div className="h-20 rounded-lg bg-gradient-to-br from-navy-700 to-navy-900" />
+                    <div className="relative h-20 overflow-hidden rounded-lg bg-gradient-to-br from-navy-700 to-navy-900">
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.12),transparent_60%)]" />
+                      <div className="absolute left-2 top-2 flex items-center gap-1 rounded bg-navy-950/40 px-1.5 py-0.5 text-[10px] font-medium text-white/80">
+                        <Video className="h-2.5 w-2.5" />
+                        12:34
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform">
+                          <PlayCircle className="h-7 w-7 text-navy-700" />
+                        </div>
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-navy-950/40">
+                        <div className="h-full w-1/3 rounded-full bg-white/80" />
+                      </div>
+                    </div>
                   </div>
                   <div className="flex items-center justify-between rounded-xl bg-success-50 p-4">
                     <div className="flex items-center gap-2">
