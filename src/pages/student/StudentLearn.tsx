@@ -324,6 +324,10 @@ export function StudentCourseDetail() {
   const totalLessons = Object.values(lessonsByModule).reduce((sum, ls) => sum + ls.length, 0);
   const completedCount = Object.values(progressMap).filter(Boolean).length;
   const percentage = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
+  const orderedLessons = modules.flatMap((mod) => lessonsByModule[mod.id] ?? []);
+  const nextLesson = selectedLesson
+    ? orderedLessons[orderedLessons.findIndex((lesson) => lesson.id === selectedLesson.id) + 1] ?? null
+    : null;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -435,10 +439,13 @@ export function StudentCourseDetail() {
           lesson={selectedLesson}
           onClose={() => setSelectedLesson(null)}
           isCompleted={progressMap[selectedLesson.id] ?? false}
+          nextLesson={nextLesson}
           onToggleComplete={() => {
             if (!user) return;
-            toggleLessonComplete(selectedLesson.id, progressMap[selectedLesson.id] ?? false);
-            setSelectedLesson(null);
+            void toggleLessonComplete(selectedLesson.id, progressMap[selectedLesson.id] ?? false);
+          }}
+          onNextLesson={() => {
+            if (nextLesson) setSelectedLesson(nextLesson);
           }}
         />
       )}
@@ -675,6 +682,7 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [attempts, setAttempts] = useState<QuizAttempt[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [result, setResult] = useState<{ score: number; maxScore: number; passed: boolean } | null>(null);
 
   useEffect(() => {
@@ -739,6 +747,7 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
   const submitQuiz = async () => {
     if (!quiz || questions.some((question) => (answers[question.id] ?? []).length === 0)) return;
     setSubmitting(true);
+    setSubmitError(null);
     const { data, error } = await supabase.rpc('submit_quiz_attempt', {
       p_quiz_id: quiz.id,
       p_answers: questions.map((question) => ({
@@ -759,6 +768,8 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
         .eq('user_id', user?.id)
         .order('attempt_number', { ascending: false });
       setAttempts((updatedAttempts as QuizAttempt[] | null) ?? []);
+    } else {
+      setSubmitError('The quiz could not be submitted. Please try again.');
     }
     setSubmitting(false);
   };
@@ -820,6 +831,7 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
               </div>
             </fieldset>
           ))}
+          {submitError && <p className="text-sm font-medium text-error-600" role="alert">{submitError}</p>}
           <Button onClick={() => void submitQuiz()} loading={submitting} disabled={!hasAnsweredEverything || attemptsRemaining === 0}>
             Submit Quiz
           </Button>
@@ -833,12 +845,16 @@ function LessonModal({
   lesson,
   onClose,
   isCompleted,
+  nextLesson,
   onToggleComplete,
+  onNextLesson,
 }: {
   lesson: Lesson;
   onClose: () => void;
   isCompleted: boolean;
+  nextLesson: Lesson | null;
   onToggleComplete: () => void;
+  onNextLesson: () => void;
 }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -910,10 +926,15 @@ function LessonModal({
 
           <QuizPanel lessonId={lesson.id} />
 
-          <div className="flex justify-end pt-4 border-t border-muted-200">
-            <Button onClick={onToggleComplete}>
-              {isCompleted ? 'Mark as Incomplete' : 'Mark as Complete'}
-            </Button>
+          <div className="flex items-center justify-between gap-3 pt-4 border-t border-muted-200">
+            <Button variant="secondary" onClick={onClose}>Close Lesson</Button>
+            {!isCompleted ? (
+              <Button onClick={onToggleComplete}>Finish Lesson</Button>
+            ) : nextLesson ? (
+              <Button onClick={onNextLesson}>Next Video <ArrowRight className="h-4 w-4" /></Button>
+            ) : (
+              <Button onClick={onClose}>Finish Course</Button>
+            )}
           </div>
         </div>
       </div>
