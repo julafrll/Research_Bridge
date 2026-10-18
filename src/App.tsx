@@ -7,7 +7,6 @@ import { LoadingPage } from '@/components/ui';
 import { LandingPage } from '@/pages/public/LandingPage';
 import { LoginPage } from '@/pages/public/LoginPage';
 import { RegisterPage } from '@/pages/public/RegisterPage';
-import { AdminSetupPage } from '@/pages/public/AdminSetupPage';
 
 // Student layout + pages
 import { StudentLayout } from '@/layouts/StudentLayout';
@@ -46,8 +45,6 @@ function AppRoutes() {
         path="/register"
         element={user ? <Navigate to={isAdmin ? '/admin' : '/dashboard'} replace /> : <RegisterPage />}
       />
-      <Route path="/setup-admin" element={<AdminSetupPage />} />
-
       {/* Student routes */}
       <Route
         element={

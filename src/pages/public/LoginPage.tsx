@@ -87,16 +87,6 @@ export function LoginPage() {
               </Link>
             </p>
           </div>
-
-          <p className="mt-6 text-center text-xs text-muted-400">
-            Admin?{' '}
-            <Link
-              to="/setup-admin"
-              className="font-medium text-navy-600 hover:text-navy-800"
-            >
-              Set up admin account
-            </Link>
-          </p>
         </div>
       </div>
     </div>
