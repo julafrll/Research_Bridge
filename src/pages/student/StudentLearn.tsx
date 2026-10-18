@@ -16,6 +16,8 @@ import {
   Award,
   Send,
   X,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
@@ -838,23 +840,37 @@ function LessonModal({
   isCompleted: boolean;
   onToggleComplete: () => void;
 }) {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center ${isFullscreen ? '' : 'p-4'}`}>
       <div
         className="absolute inset-0 bg-navy-950/40 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative z-10 w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-xl bg-white shadow-elevated animate-slide-up">
+      <div className={`relative z-10 w-full overflow-hidden bg-white shadow-elevated animate-slide-up ${isFullscreen ? 'h-full max-h-full rounded-none' : 'max-w-3xl max-h-[90vh] rounded-xl'}`}>
         <div className="border-b border-muted-200 px-6 py-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-navy-900">{lesson.title}</h2>
-          <button
-            onClick={onClose}
-            className="rounded-lg p-1.5 text-muted-400 hover:bg-muted-100"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setIsFullscreen((current) => !current)}
+              className="rounded-lg p-1.5 text-muted-400 hover:bg-muted-100 hover:text-navy-700"
+              aria-label={isFullscreen ? 'Exit full screen' : 'Make lesson window full screen'}
+              title={isFullscreen ? 'Exit full screen' : 'Full screen'}
+            >
+              {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
+            </button>
+            <button
+              onClick={onClose}
+              className="rounded-lg p-1.5 text-muted-400 hover:bg-muted-100"
+              aria-label="Close lesson"
+              title="Close lesson"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
-        <div className="max-h-[70vh] overflow-y-auto px-6 py-4 space-y-4">
+        <div className={`overflow-y-auto px-6 py-4 space-y-4 ${isFullscreen ? 'h-[calc(100%-73px)]' : 'max-h-[70vh]'}`}>
           {lesson.video_url ? (
             <div className="aspect-video rounded-lg overflow-hidden bg-navy-900">
               <VideoPlayer url={lesson.video_url} />
