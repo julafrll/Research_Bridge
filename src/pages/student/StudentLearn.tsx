@@ -684,6 +684,7 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [result, setResult] = useState<{ score: number; maxScore: number; passed: boolean } | null>(null);
+  const [showRetake, setShowRetake] = useState(false);
 
   useEffect(() => {
     const loadQuiz = async () => {
@@ -756,11 +757,12 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
       })),
     });
     if (!error && data?.[0]) {
-      setResult({
+      const attemptResult = {
         score: data[0].score,
         maxScore: data[0].max_score,
         passed: data[0].passed,
-      });
+      };
+      setResult(attemptResult);
       const { data: updatedAttempts } = await supabase
         .from('quiz_attempts')
         .select('*')
@@ -768,6 +770,10 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
         .eq('user_id', user?.id)
         .order('attempt_number', { ascending: false });
       setAttempts((updatedAttempts as QuizAttempt[] | null) ?? []);
+      const remainingAfter = Math.max(0, quiz.max_attempts - (updatedAttempts?.length ?? attempts.length + 1));
+      if (!attemptResult.passed && remainingAfter > 0) {
+        setShowRetake(true);
+      }
     } else {
       setSubmitError('The quiz could not be submitted. Please try again.');
     }
@@ -782,6 +788,16 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
     : null);
   const attemptsRemaining = Math.max(0, quiz.max_attempts - attempts.length);
   const hasAnsweredEverything = questions.every((question) => (answers[question.id] ?? []).length > 0);
+  const scorePercentage = latestResult && latestResult.maxScore > 0
+    ? Math.round((latestResult.score / latestResult.maxScore) * 100)
+    : 0;
+  const canRetake = !latestResult?.passed && attemptsRemaining > 0;
+
+  const startRetake = () => {
+    setAnswers({});
+    setResult(null);
+    setShowRetake(false);
+  };
 
   return (
     <div className="rounded-xl border border-navy-200 bg-navy-50/60 p-4">
@@ -799,13 +815,34 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
       </div>
 
       {latestResult ? (
-        <div className={`mt-4 rounded-lg border px-3 py-3 ${latestResult.passed ? 'border-success-200 bg-success-50' : 'border-warning-200 bg-warning-50'}`}>
-          <p className={`font-semibold ${latestResult.passed ? 'text-success-700' : 'text-warning-700'}`}>
-            {latestResult.passed ? 'Quiz passed' : 'Keep practicing'}
-          </p>
-          <p className="mt-1 text-sm text-muted-600">
-            You scored {latestResult.score} out of {latestResult.maxScore} points. {quiz.show_explanations ? 'Review the lesson and try again if another attempt is available.' : ''}
-          </p>
+        <div className="mt-4 space-y-3">
+          <div className={`rounded-lg border px-3 py-3 ${latestResult.passed ? 'border-success-200 bg-success-50' : 'border-error-200 bg-error-50'}`}>
+            <p className={`font-semibold ${latestResult.passed ? 'text-success-700' : 'text-error-700'}`}>
+              {latestResult.passed ? 'Quiz passed' : 'You did not pass this time'}
+            </p>
+            <p className="mt-1 text-sm text-muted-600">
+              You scored {latestResult.score} out of {latestResult.maxScore} points ({scorePercentage}%). The passing score is {quiz.passing_score}%.
+            </p>
+          </div>
+          {canRetake && showRetake && (
+            <div className="rounded-lg border border-navy-200 bg-navy-50 px-3 py-3">
+              <p className="text-sm text-navy-700">
+                You have {attemptsRemaining} attempt{attemptsRemaining === 1 ? '' : 's'} remaining. Review the lesson and try again when you're ready.
+              </p>
+              <div className="mt-3">
+                <Button size="sm" onClick={startRetake}>
+                  Retake Quiz
+                </Button>
+              </div>
+            </div>
+          )}
+          {!latestResult.passed && !canRetake && (
+            <div className="rounded-lg border border-warning-200 bg-warning-50 px-3 py-3">
+              <p className="text-sm text-warning-700">
+                You've used all {quiz.max_attempts} attempts. Review the lesson content and reach out to your instructor if you need help.
+              </p>
+            </div>
+          )}
         </div>
       ) : (
         <div className="mt-4 space-y-4">

@@ -21,6 +21,7 @@ import { AdminOverview } from '@/pages/admin/AdminOverview';
 import { AdminStudents } from '@/pages/admin/AdminStudents';
 import { AdminCourses } from '@/pages/admin/AdminCourses';
 import { AdminAssignments } from '@/pages/admin/AdminAssignments';
+import { AdminAnalytics } from '@/pages/admin/AdminAnalytics';
 
 // Placeholder
 import { PlaceholderPage } from '@/pages/PlaceholderPage';
@@ -75,6 +76,7 @@ function AppRoutes() {
         }
       >
         <Route path="/admin" element={<AdminOverview />} />
+        <Route path="/admin/analytics" element={<AdminAnalytics />} />
         <Route path="/admin/students" element={<AdminStudents />} />
         <Route path="/admin/courses" element={<AdminCourses />} />
         <Route path="/admin/assignments" element={<AdminAssignments />} />

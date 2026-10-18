@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   ShieldCheck,
+  BarChart3,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { initials } from '@/lib/utils';
@@ -27,6 +28,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Overview', path: '/admin', icon: LayoutDashboard },
+  { label: 'Analytics', path: '/admin/analytics', icon: BarChart3 },
   { label: 'Students', path: '/admin/students', icon: Users },
   { label: 'Courses & Lessons', path: '/admin/courses', icon: BookOpen },
   { label: 'Assignments', path: '/admin/assignments', icon: FileText },
