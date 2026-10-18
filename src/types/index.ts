@@ -141,6 +141,7 @@ export interface QuizAttempt {
   quiz_id: string;
   user_id: string;
   status: QuizAttemptStatus;
+  attempt_number: number;
   score: number | null;
   max_score: number;
   passed: boolean;
