@@ -685,6 +685,7 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [result, setResult] = useState<{ score: number; maxScore: number; passed: boolean } | null>(null);
   const [showRetake, setShowRetake] = useState(false);
+  const [retakeMode, setRetakeMode] = useState(false);
 
   useEffect(() => {
     const loadQuiz = async () => {
@@ -749,6 +750,7 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
     if (!quiz || questions.some((question) => (answers[question.id] ?? []).length === 0)) return;
     setSubmitting(true);
     setSubmitError(null);
+    setRetakeMode(false);
     const { data, error } = await supabase.rpc('submit_quiz_attempt', {
       p_quiz_id: quiz.id,
       p_answers: questions.map((question) => ({
@@ -783,9 +785,9 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
   if (loading || !quiz) return null;
 
   const completedAttempt = attempts.find((attempt) => attempt.status === 'completed');
-  const latestResult = result ?? (completedAttempt && completedAttempt.score !== null
+  const latestResult = retakeMode ? null : (result ?? (completedAttempt && completedAttempt.score !== null
     ? { score: completedAttempt.score, maxScore: completedAttempt.max_score, passed: completedAttempt.passed }
-    : null);
+    : null));
   const attemptsRemaining = Math.max(0, quiz.max_attempts - attempts.length);
   const hasAnsweredEverything = questions.every((question) => (answers[question.id] ?? []).length > 0);
   const scorePercentage = latestResult && latestResult.maxScore > 0
@@ -797,6 +799,7 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
     setAnswers({});
     setResult(null);
     setShowRetake(false);
+    setRetakeMode(true);
   };
 
   return (
