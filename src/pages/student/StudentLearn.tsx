@@ -33,7 +33,19 @@ import {
   Textarea,
   Input,
 } from '@/components/ui';
-import type { Course, Module, Lesson, LessonProgress, Enrollment, Assignment, Submission } from '@/types';
+import type {
+  Course,
+  Module,
+  Lesson,
+  LessonProgress,
+  Enrollment,
+  Assignment,
+  Submission,
+  Quiz,
+  QuizQuestion,
+  QuizAnswerOptionPublic,
+  QuizAttempt,
+} from '@/types';
 import { formatDate, daysUntil, isOverdue } from '@/lib/utils';
 
 export function StudentLearn() {
@@ -652,6 +664,169 @@ function AssignmentSubmissionPanel({
   );
 }
 
+function QuizPanel({ lessonId }: { lessonId: string }) {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [options, setOptions] = useState<Record<string, QuizAnswerOptionPublic[]>>({});
+  const [answers, setAnswers] = useState<Record<string, string[]>>({});
+  const [attempts, setAttempts] = useState<QuizAttempt[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState<{ score: number; maxScore: number; passed: boolean } | null>(null);
+
+  useEffect(() => {
+    const loadQuiz = async () => {
+      if (!user) return;
+      setLoading(true);
+      const { data: quizData } = await supabase
+        .from('quizzes')
+        .select('*')
+        .eq('lesson_id', lessonId)
+        .eq('is_published', true)
+        .maybeSingle();
+      const currentQuiz = quizData as Quiz | null;
+      setQuiz(currentQuiz);
+      if (!currentQuiz) {
+        setLoading(false);
+        return;
+      }
+
+      const [{ data: questionData }, { data: attemptData }] = await Promise.all([
+        supabase.from('quiz_questions').select('*').eq('quiz_id', currentQuiz.id).order('sort_order'),
+        supabase.from('quiz_attempts').select('*').eq('quiz_id', currentQuiz.id).eq('user_id', user.id).order('attempt_number', { ascending: false }),
+      ]);
+      const questionList = (questionData as QuizQuestion[] | null) ?? [];
+      setQuestions(questionList);
+      setAttempts((attemptData as QuizAttempt[] | null) ?? []);
+
+      if (questionList.length > 0) {
+        const { data: optionData } = await supabase
+          .from('quiz_answer_options_public')
+          .select('*')
+          .in('question_id', questionList.map((question) => question.id))
+          .order('sort_order');
+        const optionMap: Record<string, QuizAnswerOptionPublic[]> = {};
+        ((optionData as QuizAnswerOptionPublic[] | null) ?? []).forEach((option) => {
+          if (!optionMap[option.question_id]) optionMap[option.question_id] = [];
+          optionMap[option.question_id].push(option);
+        });
+        setOptions(optionMap);
+      }
+      setLoading(false);
+    };
+
+    void loadQuiz();
+  }, [lessonId, user]);
+
+  const toggleAnswer = (question: QuizQuestion, optionId: string) => {
+    setAnswers((current) => {
+      const selected = current[question.id] ?? [];
+      if (question.question_type === 'multiple') {
+        return {
+          ...current,
+          [question.id]: selected.includes(optionId)
+            ? selected.filter((id) => id !== optionId)
+            : [...selected, optionId],
+        };
+      }
+      return { ...current, [question.id]: [optionId] };
+    });
+  };
+
+  const submitQuiz = async () => {
+    if (!quiz || questions.some((question) => (answers[question.id] ?? []).length === 0)) return;
+    setSubmitting(true);
+    const { data, error } = await supabase.rpc('submit_quiz_attempt', {
+      p_quiz_id: quiz.id,
+      p_answers: questions.map((question) => ({
+        question_id: question.id,
+        selected_option_ids: answers[question.id] ?? [],
+      })),
+    });
+    if (!error && data?.[0]) {
+      setResult({
+        score: data[0].score,
+        maxScore: data[0].max_score,
+        passed: data[0].passed,
+      });
+      const { data: updatedAttempts } = await supabase
+        .from('quiz_attempts')
+        .select('*')
+        .eq('quiz_id', quiz.id)
+        .eq('user_id', user?.id)
+        .order('attempt_number', { ascending: false });
+      setAttempts((updatedAttempts as QuizAttempt[] | null) ?? []);
+    }
+    setSubmitting(false);
+  };
+
+  if (loading || !quiz) return null;
+
+  const completedAttempt = attempts.find((attempt) => attempt.status === 'completed');
+  const latestResult = result ?? (completedAttempt && completedAttempt.score !== null
+    ? { score: completedAttempt.score, maxScore: completedAttempt.max_score, passed: completedAttempt.passed }
+    : null);
+  const attemptsRemaining = Math.max(0, quiz.max_attempts - attempts.length);
+  const hasAnsweredEverything = questions.every((question) => (answers[question.id] ?? []).length > 0);
+
+  return (
+    <div className="rounded-xl border border-navy-200 bg-navy-50/60 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <ClipboardCheck className="h-5 w-5 text-navy-700" />
+            <h3 className="font-semibold text-navy-900">{quiz.title}</h3>
+          </div>
+          <p className="mt-1 text-sm text-muted-600">{quiz.description}</p>
+        </div>
+        <Badge variant={latestResult?.passed ? 'success' : 'neutral'}>
+          {latestResult ? `${latestResult.score}/${latestResult.maxScore}` : `${attemptsRemaining} attempt${attemptsRemaining === 1 ? '' : 's'} left`}
+        </Badge>
+      </div>
+
+      {latestResult ? (
+        <div className={`mt-4 rounded-lg border px-3 py-3 ${latestResult.passed ? 'border-success-200 bg-success-50' : 'border-warning-200 bg-warning-50'}`}>
+          <p className={`font-semibold ${latestResult.passed ? 'text-success-700' : 'text-warning-700'}`}>
+            {latestResult.passed ? 'Quiz passed' : 'Keep practicing'}
+          </p>
+          <p className="mt-1 text-sm text-muted-600">
+            You scored {latestResult.score} out of {latestResult.maxScore} points. {quiz.show_explanations ? 'Review the lesson and try again if another attempt is available.' : ''}
+          </p>
+        </div>
+      ) : (
+        <div className="mt-4 space-y-4">
+          {questions.map((question, index) => (
+            <fieldset key={question.id} className="rounded-lg border border-muted-200 bg-white p-3">
+              <legend className="px-1 text-sm font-medium text-navy-900">{index + 1}. {question.question_text}</legend>
+              <div className="mt-2 space-y-2">
+                {(options[question.id] ?? []).map((option) => {
+                  const selected = (answers[question.id] ?? []).includes(option.id);
+                  return (
+                    <label key={option.id} className={`flex cursor-pointer items-start gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${selected ? 'border-navy-400 bg-navy-50 text-navy-900' : 'border-muted-200 text-muted-600 hover:border-navy-200'}`}>
+                      <input
+                        type={question.question_type === 'multiple' ? 'checkbox' : 'radio'}
+                        name={question.id}
+                        checked={selected}
+                        onChange={() => toggleAnswer(question, option.id)}
+                        className="mt-0.5 accent-navy-700"
+                      />
+                      <span>{option.option_text}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+          ))}
+          <Button onClick={() => void submitQuiz()} loading={submitting} disabled={!hasAnsweredEverything || attemptsRemaining === 0}>
+            Submit Quiz
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function LessonModal({
   lesson,
   onClose,
@@ -716,6 +891,8 @@ function LessonModal({
               </div>
             </div>
           )}
+
+          <QuizPanel lessonId={lesson.id} />
 
           <div className="flex justify-end pt-4 border-t border-muted-200">
             <Button onClick={onToggleComplete}>
