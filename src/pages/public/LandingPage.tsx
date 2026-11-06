@@ -1,295 +1,262 @@
-import { Link, useNavigate } from 'react-router-dom';
-import {
-  ArrowRight,
-  BookOpen,
-  Video,
-  FileText,
-  Award,
-  Users,
-  Microscope,
-  CheckCircle2,
-  PlayCircle,
-} from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, FileText, Presentation, Video, Trophy, Users, Scale, CalendarClock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui';
-import { BrandLogo } from '@/components/BrandLogo';
+import { SectionHeading } from '@/layouts/PublicLayout';
+import { FEATURES } from '@/config/features';
+import {
+  COMPETITION,
+  STAGES,
+  RESEARCH_CATEGORIES,
+  AWARDS,
+  RUBRIC_TOTAL,
+} from '@/config/competition';
 
 export function LandingPage() {
   const { user, isAdmin } = useAuth();
-  const navigate = useNavigate();
+  const entryLink = user ? (isAdmin ? '/admin/competition' : '/competition') : '/register';
 
-  const dashboardLink = user
-    ? isAdmin
-      ? '/admin'
-      : '/dashboard'
-    : '/login';
+  const materials = [
+    {
+      icon: FileText,
+      title: 'Research paper',
+      detail: '1,000–3,000 words, excluding references and appendices. PDF or Word.',
+    },
+    {
+      icon: Presentation,
+      title: 'Scientific poster',
+      detail: 'Landscape PDF, about 16:9 or A1. Readable fonts, clear charts, credited images.',
+    },
+    ...(FEATURES.videos
+      ? [
+          {
+            icon: Video,
+            title: 'Video presentation',
+            detail: '2–5 minutes, presenting your poster on camera in your own words.',
+          },
+        ]
+      : []),
+  ];
+
+  const facts = [
+    { value: String(RESEARCH_CATEGORIES.length), label: 'Research categories' },
+    { value: '2+', label: 'Judges per project' },
+    { value: String(RUBRIC_TOTAL), label: 'Point scoring rubric' },
+    { value: '$500', label: 'In prizes' },
+  ];
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Nav */}
-      <nav className="sticky top-0 z-40 border-b border-muted-200 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <BrandLogo size="sm" />
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => navigate(dashboardLink)}>
-              {user ? 'Dashboard' : 'Sign In'}
-            </Button>
-            {!user && (
-              <Button size="sm" onClick={() => navigate('/register')}>
-                Get Started
-                <ArrowRight className="h-4 w-4" />
-              </Button>
+    <>
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-navy-900 text-white">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage:
+              'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
+            backgroundSize: '48px 48px',
+          }}
+        />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.4fr_1fr] lg:py-28">
+          <div>
+            <p className="eyebrow-light">International Student Research Competition · {COMPETITION.edition}</p>
+            <h1 className="mt-5 text-4xl leading-[1.15] text-white md:text-5xl md:leading-[1.15]">
+              Share your research.
+              <br />
+              <span className="italic text-teal-200">Be judged by professionals.</span>
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-blue-100">{COMPETITION.summary}</p>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <Link
+                to={entryLink}
+                className="inline-flex items-center justify-center gap-2 rounded bg-white px-6 py-3 font-semibold text-navy-950 transition-colors hover:bg-blue-50"
+              >
+                {user ? 'Go to my entry' : 'Register & submit'} <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                to="/guidelines"
+                className="inline-flex items-center justify-center gap-2 rounded border-2 border-white/70 px-6 py-3 font-semibold text-white transition-colors hover:bg-white/10"
+              >
+                Read the guidelines
+              </Link>
+            </div>
+            {COMPETITION.submissionDeadline && (
+              <p className="mt-6 flex items-center gap-2 text-sm text-blue-200">
+                <CalendarClock className="h-4 w-4 text-gold-300" />
+                Submission deadline: <span className="font-semibold text-white">{COMPETITION.submissionDeadline}</span>
+              </p>
             )}
           </div>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-navy-50 via-white to-blue-50" />
-        <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-blue-100/40 blur-3xl" />
-        <div className="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
-          <div className="grid items-center gap-12 md:grid-cols-2">
-            <div className="animate-slide-up">
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-navy-200 bg-navy-50 px-3 py-1.5">
-                <Microscope className="h-3.5 w-3.5 text-navy-600" />
-                <span className="text-xs font-medium text-navy-700">
-                  Research Education Platform
-                </span>
-              </div>
-              <h1 className="text-4xl font-bold leading-tight text-navy-900 md:text-5xl">
-                From Curiosity
-                <br />
-                <span className="text-navy-600">to Discovery.</span>
-              </h1>
-              <p className="mt-6 max-w-md text-lg text-muted-600">
-                A structured learning platform for aspiring researchers. Watch expert
-                lessons, take quizzes, submit assignments, and receive personalized
-                feedback from instructors.
-              </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Button size="lg" onClick={() => navigate('/register')}>
-                  Start Learning Free
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-                <Button variant="secondary" size="lg" onClick={() => navigate('/login')}>
-                  Sign In
-                </Button>
-              </div>
-              <div className="mt-8 flex items-center gap-6">
-                <div className="flex -space-x-2">
-                  {['A', 'K', 'M', 'S'].map((initial, i) => (
-                    <div
-                      key={i}
-                      className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-navy-700 text-xs font-medium text-white"
-                    >
-                      {initial}
-                    </div>
-                  ))}
-                </div>
-                <p className="text-sm text-muted-500">
-                  Trusted by research students worldwide
-                </p>
-              </div>
-            </div>
-
-            {/* Hero visual */}
-            <div className="relative hidden md:block">
-              <div className="rounded-2xl border border-navy-200 bg-white p-6 shadow-elevated">
-                <div className="mb-5 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img src="/Research_Bridge_Logo-selection.png" alt="" className="h-10 w-10 rounded-full" />
-                    <div className="h-3 w-3 rounded-full bg-error-300" />
-                    <div className="h-3 w-3 rounded-full bg-warning-300" />
-                    <div className="h-3 w-3 rounded-full bg-success-300" />
-                  </div>
-                  <span className="text-xs text-muted-400">Research Bridge</span>
-                </div>
-                <div className="space-y-3">
-                  <div className="rounded-xl bg-navy-50 p-4">
-                    <div className="mb-2 flex items-center gap-2">
-                      <BookOpen className="h-4 w-4 text-navy-600" />
-                      <span className="text-sm font-medium text-navy-900">
-                        Research Methodology
-                      </span>
-                    </div>
-                    <div className="h-2 w-full rounded-full bg-navy-100">
-                      <div className="h-2 w-3/4 rounded-full bg-navy-600" />
-                    </div>
-                    <p className="mt-1.5 text-xs text-muted-500">75% Complete</p>
-                  </div>
-                  <div className="rounded-xl border border-muted-200 p-4">
-                    <div className="mb-2 flex items-center gap-2">
-                      <Video className="h-4 w-4 text-blue-500" />
-                      <span className="text-sm font-medium text-navy-900">
-                        Lesson 4: Literature Reviews
-                      </span>
-                    </div>
-                    <div className="relative h-20 overflow-hidden rounded-lg bg-gradient-to-br from-navy-700 to-navy-900">
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.12),transparent_60%)]" />
-                      <div className="absolute left-2 top-2 flex items-center gap-1 rounded bg-navy-950/40 px-1.5 py-0.5 text-[10px] font-medium text-white/80">
-                        <Video className="h-2.5 w-2.5" />
-                        12:34
-                      </div>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform">
-                          <PlayCircle className="h-7 w-7 text-navy-700" />
-                        </div>
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-navy-950/40">
-                        <div className="h-full w-1/3 rounded-full bg-white/80" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between rounded-xl bg-success-50 p-4">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-success-600" />
-                      <span className="text-sm font-medium text-success-700">
-                        Quiz Passed
-                      </span>
-                    </div>
-                    <span className="text-sm font-semibold text-success-700">92%</span>
-                  </div>
-                </div>
-              </div>
+          <div className="hidden justify-center lg:flex">
+            <div className="relative">
+              <div className="absolute -inset-6 rounded-full border border-white/15" />
+              <div className="absolute -inset-12 rounded-full border border-white/10" />
+              <img
+                src="/Research_Bridge_Logo-selection.png"
+                alt="Research Bridge"
+                className="relative h-64 w-64 rounded-full ring-4 ring-white/20 shadow-elevated"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="border-t border-muted-200 bg-muted-50 py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-navy-900">
-              Everything you need to master research
-            </h2>
-            <p className="mt-3 text-muted-600">
-              A complete learning management system built for research education
-            </p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                icon: Video,
-                title: 'Video Lessons',
-                desc: 'Watch structured video lessons organized into courses, modules, and learning tracks.',
-              },
-              {
-                icon: FileText,
-                title: 'Assignments & Quizzes',
-                desc: 'Take automatically graded quizzes and submit assignments for instructor review.',
-              },
-              {
-                icon: Award,
-                title: 'Grades & Feedback',
-                desc: 'Receive personalized feedback and grades from your instructors on every submission.',
-              },
-              {
-                icon: BookOpen,
-                title: 'Research Hub',
-                desc: 'Access a curated library of research methodology guides, writing tips, and tools.',
-              },
-              {
-                icon: Users,
-                title: 'Student Community',
-                desc: 'Join a community of learners and track your progress through structured courses.',
-              },
-              {
-                icon: Microscope,
-                title: 'Expert Curriculum',
-                desc: 'Learn from a curriculum designed by experienced researchers and educators.',
-              },
-            ].map((feature) => (
-              <div
-                key={feature.title}
-                className="card-hover rounded-xl p-6"
-              >
-                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-navy-100">
-                  <feature.icon className="h-5 w-5 text-navy-700" />
-                </div>
-                <h3 className="text-base font-semibold text-navy-900">{feature.title}</h3>
-                <p className="mt-2 text-sm text-muted-600">{feature.desc}</p>
-              </div>
-            ))}
-          </div>
+      {/* Facts */}
+      <section className="border-b border-muted-200 bg-white">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 px-4 sm:px-6 md:grid-cols-4">
+          {facts.map((f) => (
+            <div
+              key={f.label}
+              className="border-muted-200 py-8 text-center even:border-l md:border-l md:first:border-l-0"
+            >
+              <p className="font-serif text-3xl font-bold text-navy-900">{f.value}</p>
+              <p className="mt-1 text-sm text-muted-500">{f.label}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* How it works */}
+      {/* Timeline */}
       <section className="py-20">
-        <div className="mx-auto max-w-4xl px-6">
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-navy-900">How it works</h2>
-          </div>
-          <div className="space-y-8">
-            {[
-              {
-                step: '01',
-                title: 'Create your account',
-                desc: 'Register for free with your email and password. You get instant access to all published courses.',
-              },
-              {
-                step: '02',
-                title: 'Learn at your pace',
-                desc: 'Watch video lessons, read course materials, and track your progress through each module.',
-              },
-              {
-                step: '03',
-                title: 'Test your knowledge',
-                desc: 'Take quizzes to check your understanding and submit assignments for instructor feedback.',
-              },
-              {
-                step: '04',
-                title: 'Grow with feedback',
-                desc: 'Receive detailed grades and feedback to improve your research skills over time.',
-              },
-            ].map((item) => (
-              <div key={item.step} className="flex gap-6">
-                <div className="flex-shrink-0">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-navy-900 text-sm font-bold text-white">
-                    {item.step}
-                  </div>
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <SectionHeading eyebrow="Important dates" title="How the competition runs" />
+          <ol className="grid gap-px overflow-hidden rounded-md border border-muted-200 bg-muted-200 md:grid-cols-4">
+            {STAGES.map((stage) => (
+              <li key={stage.number} className="bg-white p-6">
+                <div className="flex items-baseline justify-between">
+                  <span className="font-serif text-3xl font-bold text-teal-500">0{stage.number}</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-500">{stage.when}</span>
                 </div>
-                <div className="pt-2">
-                  <h3 className="text-lg font-semibold text-navy-900">{item.title}</h3>
-                  <p className="mt-1 text-muted-600">{item.desc}</p>
-                </div>
+                <h3 className="mt-4 text-lg text-navy-950">{stage.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-600">{stage.description}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* What to submit */}
+      <section className="border-y border-muted-200 bg-white py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <SectionHeading
+            eyebrow="Registration & submission"
+            title="What you submit"
+            action={
+              <Link to="/guidelines" className="link-teal hidden text-sm sm:inline">
+                Full guidelines →
+              </Link>
+            }
+          />
+          <div className={`grid gap-6 ${materials.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
+            {materials.map((m) => (
+              <div key={m.title} className="rounded-md border border-muted-200 bg-muted-50 p-7">
+                <m.icon className="h-6 w-6 text-teal-600" />
+                <h3 className="mt-4 text-xl text-navy-950">{m.title}</h3>
+                <p className="mt-2 leading-relaxed text-muted-600">{m.detail}</p>
               </div>
             ))}
           </div>
+          <p className="mt-6 text-sm text-muted-500">
+            Register on Research Bridge, fill in your participant and project details, upload your files, and you will receive a
+            unique submission ID. You can edit your entry until the deadline.
+          </p>
+        </div>
+      </section>
+
+      {/* Categories + judging */}
+      <section className="py-20">
+        <div className="mx-auto grid max-w-6xl gap-14 px-4 sm:px-6 lg:grid-cols-2">
+          <div>
+            <SectionHeading eyebrow="Fields" title="Research categories" />
+            <ul className="divide-y divide-muted-200 border-y border-muted-200">
+              {RESEARCH_CATEGORIES.map((c, i) => (
+                <li key={c} className="flex items-center gap-4 py-3.5">
+                  <span className="w-6 font-serif text-sm text-teal-600">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="font-medium text-navy-900">{c}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <SectionHeading eyebrow="Fair evaluation" title="Transparent judging" />
+            <div className="space-y-5">
+              {[
+                {
+                  icon: Users,
+                  t: 'At least two judges per project',
+                  d: 'Researchers, teachers, engineers, and subject-matter experts score every project independently.',
+                },
+                {
+                  icon: Scale,
+                  t: `A standardized ${RUBRIC_TOTAL}-point rubric`,
+                  d: 'Research question, scientific understanding, methodology, results, and originality.',
+                },
+                {
+                  icon: Trophy,
+                  t: 'Quality over resources',
+                  d: 'Judges evaluate the research itself — not school prestige, expensive equipment, or background.',
+                },
+              ].map((x) => (
+                <div key={x.t} className="flex gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-50">
+                    <x.icon className="h-5 w-5 text-teal-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-navy-950">{x.t}</h4>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-600">{x.d}</p>
+                  </div>
+                </div>
+              ))}
+              <Link to="/about#judging" className="link-teal inline-block text-sm">
+                See the full rubric →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Awards */}
+      <section className="border-t border-muted-200 bg-white py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <SectionHeading eyebrow="Recognition" title="Awards & prizes" />
+          <div className="grid gap-6 md:grid-cols-3">
+            {AWARDS.map((a, i) => (
+              <div
+                key={a.key}
+                className={`rounded-md border p-7 ${
+                  i === 0 ? 'border-gold-300 bg-gold-50' : 'border-muted-200 bg-muted-50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-700">{a.place}</span>
+                  <Trophy className={`h-5 w-5 ${i === 0 ? 'text-gold-500' : 'text-gold-400'}`} />
+                </div>
+                <p className="mt-5 font-serif text-4xl font-bold text-navy-950">{a.prize}</p>
+                <p className="mt-2 font-medium text-navy-800">{a.title}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-6 text-sm text-muted-500">
+            Every participant receives a digital certificate. Approved projects are published in the online research gallery.
+          </p>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="border-t border-muted-200 bg-navy-900 py-16">
-        <div className="mx-auto max-w-4xl px-6 text-center">
-          <h2 className="text-3xl font-bold text-white">
-            Ready to begin your research journey?
-          </h2>
-          <p className="mt-3 text-navy-200">
-            Join Research Bridge today and start learning.
+      <section className="bg-navy-900 py-20 text-white">
+        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
+          <h2 className="text-3xl text-white md:text-4xl">Ready to share your discovery?</h2>
+          <p className="mt-4 text-lg text-blue-100">
+            Students from every country and every field are welcome. Register, upload your work, and join a global
+            community of young researchers.
           </p>
-          <div className="mt-8 flex justify-center gap-3">
-            <Button
-              size="lg"
-              className="bg-white text-navy-900 hover:bg-muted-100"
-              onClick={() => navigate('/register')}
-            >
-              Create Account
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
+          <Link
+            to={entryLink}
+            className="mt-9 inline-flex items-center gap-2 rounded bg-white px-7 py-3 font-semibold text-navy-950 transition-colors hover:bg-blue-50"
+          >
+            {user ? 'Go to my entry' : 'Register now'} <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-navy-800 bg-navy-950 py-8">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6">
-          <BrandLogo href="/" variant="light" size="sm" />
-          <p className="text-sm text-blue-200">From Curiosity to Discovery.</p>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }

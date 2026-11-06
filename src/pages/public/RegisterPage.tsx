@@ -62,7 +62,7 @@ export function RegisterPage() {
           <div className="card rounded-xl p-8">
             <h1 className="text-2xl font-bold text-navy-900">Create your account</h1>
             <p className="mt-2 text-sm text-muted-500">
-              Join Research Bridge and start learning today.
+              Create an account to register for the Online Research Paper Competition.
             </p>
 
             {error && (
