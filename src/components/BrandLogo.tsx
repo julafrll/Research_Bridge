@@ -22,7 +22,7 @@ export function BrandLogo({
   const content = (
     <div className="flex items-center gap-3">
       <img
-        src="/Research_Bridge_Logo-selection.png"
+        src={`${import.meta.env.BASE_URL}Research_Bridge_Logo-selection.png`}
         alt="Research Bridge"
         className={`${sizeClasses[size]} shrink-0 rounded-full object-cover`}
       />

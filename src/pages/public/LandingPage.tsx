@@ -91,7 +91,7 @@ export function LandingPage() {
               <div className="absolute -inset-6 rounded-full border border-white/15" />
               <div className="absolute -inset-12 rounded-full border border-white/10" />
               <img
-                src="/Research_Bridge_Logo-selection.png"
+                src={`${import.meta.env.BASE_URL}Research_Bridge_Logo-selection.png`}
                 alt="Research Bridge"
                 className="relative h-64 w-64 rounded-full ring-4 ring-white/20 shadow-elevated"
               />
