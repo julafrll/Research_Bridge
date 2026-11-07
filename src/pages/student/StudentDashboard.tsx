@@ -228,8 +228,8 @@ export function StudentDashboard() {
                 <p className="text-xs font-medium text-muted-500">Enrolled Courses</p>
                 <p className="mt-1 text-2xl font-bold text-navy-900">{enrolledCourses.length}</p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
-                <BookOpen className="h-5 w-5 text-blue-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-navy-100">
+                <BookOpen className="h-5 w-5 text-navy-600" />
               </div>
             </div>
           </CardBody>

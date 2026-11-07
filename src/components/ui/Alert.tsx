@@ -15,7 +15,7 @@ const variantConfig: Record<
   { container: string; icon: ReactNode }
 > = {
   info: {
-    container: 'bg-blue-50 border-blue-200 text-blue-800',
+    container: 'bg-navy-50 border-navy-200 text-navy-800',
     icon: <Info className="h-5 w-5 text-blue-500" />,
   },
   success: {

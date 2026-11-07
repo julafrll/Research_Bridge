@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowRight, Mail, Instagram } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { BrandLogo } from '@/components/BrandLogo';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { COMPETITION } from '@/config/competition';
 
 const NAV = [
@@ -29,7 +30,7 @@ export function PublicLayout() {
 
   return (
     <div className="flex min-h-screen flex-col bg-muted-50">
-      <header className="sticky top-0 z-40 border-b border-muted-200 bg-muted-50/95 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-muted-200/80 bg-muted-50/85 backdrop-blur-lg">
         <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
           <BrandLogo size="sm" />
 
@@ -52,31 +53,35 @@ export function PublicLayout() {
             ))}
           </nav>
 
-          <div className="hidden items-center gap-2 lg:flex">
-            <Link to={accountLink} className="px-3 py-2 text-sm font-medium text-navy-800 hover:text-navy-950">
+          <div className="hidden items-center gap-1 lg:flex">
+            <ThemeToggle />
+            <Link to={accountLink} className="rounded-lg px-3 py-2 text-sm font-medium text-navy-800 hover:text-navy-950">
               {user ? 'My account' : 'Sign in'}
             </Link>
             {!user && (
               <Link
                 to="/register"
-                className="inline-flex items-center gap-1.5 rounded bg-navy-950 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-navy-900"
+                className="ml-1 inline-flex items-center gap-1.5 rounded-full bg-brand-950 px-5 py-2 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-900 hover:shadow-card-hover dark:bg-teal-500 dark:text-muted-50 dark:hover:bg-teal-400"
               >
                 Register <ArrowRight className="h-4 w-4" />
               </Link>
             )}
           </div>
 
-          <button
-            className="rounded p-2 text-navy-900 hover:bg-muted-100 lg:hidden"
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? 'Close menu' : 'Open menu'}
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          <div className="flex items-center lg:hidden">
+            <ThemeToggle />
+            <button
+              className="rounded-lg p-2 text-navy-900 hover:bg-muted-100"
+              onClick={() => setOpen((v) => !v)}
+              aria-label={open ? 'Close menu' : 'Open menu'}
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
 
         {open && (
-          <div className="border-t border-muted-200 bg-white px-4 py-3 lg:hidden animate-slide-down">
+          <div className="border-t border-muted-200 bg-surface px-4 py-3 lg:hidden animate-slide-down">
             <nav className="flex flex-col">
               {NAV.map((item) => (
                 <NavLink
@@ -111,7 +116,7 @@ export function PublicLayout() {
         <Outlet />
       </main>
 
-      <footer className="bg-navy-950 text-blue-100">
+      <footer className="bg-brand-950 text-blue-100 dark:bg-[#0a1422]">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
           <div>
             <BrandLogo variant="light" size="sm" />
@@ -158,7 +163,7 @@ export function PublicLayout() {
 function FooterCol({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
-      <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">{title}</h4>
+      <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-aqua-300">{title}</h4>
       <div className="flex flex-col gap-2.5">{children}</div>
     </div>
   );
@@ -175,13 +180,35 @@ function FooterLink({ to, children }: { to: string; children: ReactNode }) {
 /** Navy masthead used at the top of every inner public page. */
 export function PageMasthead({ eyebrow, title, intro }: { eyebrow: string; title: string; intro?: string }) {
   return (
-    <section className="bg-navy-900 text-white">
-      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 md:py-20">
+    <section className="relative overflow-hidden bg-brand-950 text-white">
+      <HeroBackdrop />
+      <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
         <p className="eyebrow-light">{eyebrow}</p>
-        <h1 className="mt-3 max-w-3xl text-3xl text-white md:text-[2.75rem] md:leading-[1.2]">{title}</h1>
-        {intro && <p className="mt-5 max-w-2xl text-lg leading-relaxed text-blue-100">{intro}</p>}
+        <h1 className="mt-4 max-w-3xl text-3xl text-white md:text-5xl md:leading-[1.15]">{title}</h1>
+        {intro && <p className="mt-5 max-w-2xl text-lg leading-relaxed text-blue-100/90">{intro}</p>}
       </div>
     </section>
+  );
+}
+
+/** Soft glow + fine grid behind navy heroes. */
+export function HeroBackdrop() {
+  return (
+    <>
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-950 via-brand-900 to-[#16325c]" />
+      <div className="pointer-events-none absolute -right-32 -top-40 h-[28rem] w-[28rem] rounded-full bg-[#4daea5]/25 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-48 -left-24 h-[26rem] w-[26rem] rounded-full bg-[#7895be]/25 blur-3xl" />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.06]"
+        style={{
+          backgroundImage:
+            'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
+          backgroundSize: '56px 56px',
+          maskImage: 'radial-gradient(ellipse at 30% 40%, black 30%, transparent 75%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at 30% 40%, black 30%, transparent 75%)',
+        }}
+      />
+    </>
   );
 }
 

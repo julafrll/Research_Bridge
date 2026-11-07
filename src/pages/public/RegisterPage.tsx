@@ -1,12 +1,14 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { MailCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
+import { siteUrl } from '@/lib/site';
 import { Button, Input } from '@/components/ui';
-import { BrandLogo } from '@/components/BrandLogo';
+import { AuthError, AuthNotice, AuthShell } from '@/components/AuthShell';
 
 export function RegisterPage() {
-  const { signUp, signIn } = useAuth();
+  const { signUp } = useAuth();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -14,6 +16,8 @@ export function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
+  const [resent, setResent] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -23,119 +27,141 @@ export function RegisterPage() {
       setError('Passwords do not match.');
       return;
     }
-
     if (password.length < 8) {
       setError('Password must be at least 8 characters long.');
       return;
     }
 
     setLoading(true);
-
-    const { error: signUpError } = await signUp(email, password, fullName);
+    const { error: signUpError, needsConfirmation } = await signUp(email.trim(), password, fullName.trim());
+    setLoading(false);
 
     if (signUpError) {
       setError(signUpError);
-      setLoading(false);
       return;
     }
 
-    // Auto sign-in after registration
-    const { error: signInError } = await signIn(email, password);
-    if (signInError) {
-      setError('Account created. Please sign in.');
-      setLoading(false);
-      navigate('/login');
+    if (needsConfirmation) {
+      setAwaitingConfirmation(true);
       return;
     }
 
-    navigate('/');
+    // Email confirmation is off in Supabase: the user is already signed in.
+    navigate('/competition');
   };
 
-  return (
-    <div className="flex min-h-screen flex-col bg-muted-50">
-      <div className="flex flex-1 items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-          <div className="mb-8 flex justify-center">
-            <BrandLogo size="md" showTagline />
+  const resend = async () => {
+    setError(null);
+    const { error: resendError } = await supabase.auth.resend({
+      type: 'signup',
+      email: email.trim(),
+      options: { emailRedirectTo: siteUrl('competition') },
+    });
+    if (resendError) setError(resendError.message);
+    else setResent(true);
+  };
+
+  if (awaitingConfirmation) {
+    return (
+      <AuthShell title="Confirm your email">
+        <div className="rounded-2xl border border-muted-200 bg-surface p-6 text-center shadow-card">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-teal-50">
+            <MailCheck className="h-7 w-7 text-teal-600" />
           </div>
-
-          <div className="card rounded-xl p-8">
-            <h1 className="text-2xl font-bold text-navy-900">Create your account</h1>
-            <p className="mt-2 text-sm text-muted-500">
-              Create an account to register for the Online Research Paper Competition.
-            </p>
-
-            {error && (
-              <div className="mt-4 flex items-start gap-2 rounded-lg bg-error-50 px-4 py-3 text-sm text-error-700">
-                <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-              <Input
-                label="Full Name"
-                type="text"
-                name="fullName"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Jane Doe"
-                required
-                autoComplete="name"
-              />
-              <Input
-                label="Email"
-                type="email"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                autoComplete="email"
-              />
-              <Input
-                label="Password"
-                type="password"
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="At least 8 characters"
-                required
-                autoComplete="new-password"
-                hint="Minimum 8 characters"
-              />
-              <Input
-                label="Confirm Password"
-                type="password"
-                name="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Re-enter your password"
-                required
-                autoComplete="new-password"
-              />
-              <Button type="submit" fullWidth loading={loading} size="lg">
-                Create Account
-              </Button>
-            </form>
-
-            <div className="mt-4 flex items-center gap-2 rounded-lg bg-navy-50 px-4 py-3 text-xs text-navy-600">
-              <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-navy-500" />
-              <span>You'll be registered as a student. Admin access is set up separately.</span>
-            </div>
-
-            <p className="mt-6 text-center text-sm text-muted-500">
-              Already have an account?{' '}
-              <Link
-                to="/login"
-                className="font-medium text-navy-700 hover:text-navy-900"
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
+          <p className="mt-4 text-navy-900">
+            We sent a confirmation link to <strong>{email}</strong>.
+          </p>
+          <p className="mt-2 text-sm text-muted-500">
+            Open it to activate your account — it brings you straight to your competition entry. Check your spam folder
+            if it doesn&apos;t arrive within a few minutes.
+          </p>
         </div>
-      </div>
-    </div>
+        <div className="mt-5">
+          {error && <AuthError>{error}</AuthError>}
+          {resent && <AuthNotice>A new confirmation link is on its way.</AuthNotice>}
+        </div>
+        <div className="flex flex-col items-center gap-3 text-sm">
+          <button type="button" onClick={resend} className="link-teal">
+            Resend confirmation email
+          </button>
+          <Link to="/login" className="text-muted-500 hover:text-navy-900">
+            Back to sign in
+          </Link>
+        </div>
+      </AuthShell>
+    );
+  }
+
+  return (
+    <AuthShell
+      title="Create your account"
+      subtitle="Register for the Online Research Paper Competition. You'll confirm your email in the next step."
+    >
+      {error && (
+        <AuthError>
+          {error}
+          {/already exists/i.test(error) && (
+            <Link to="/forgot-password" state={{ email }} className="mt-2 block font-semibold underline">
+              Reset your password
+            </Link>
+          )}
+        </AuthError>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          label="Full name"
+          type="text"
+          name="fullName"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          placeholder="Jane Doe"
+          required
+          autoComplete="name"
+        />
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          required
+          autoComplete="email"
+        />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Input
+            label="Password"
+            type="password"
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="At least 8 characters"
+            required
+            autoComplete="new-password"
+          />
+          <Input
+            label="Confirm password"
+            type="password"
+            name="confirmPassword"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Re-enter password"
+            required
+            autoComplete="new-password"
+          />
+        </div>
+        <Button type="submit" fullWidth loading={loading} size="lg">
+          Create account
+        </Button>
+      </form>
+
+      <p className="mt-8 text-center text-sm text-muted-500">
+        Already have an account?{' '}
+        <Link to="/login" className="link-teal">
+          Sign in
+        </Link>
+      </p>
+    </AuthShell>
   );
 }

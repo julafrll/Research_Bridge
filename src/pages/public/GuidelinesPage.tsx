@@ -50,7 +50,7 @@ export function GuidelinesPage() {
             {STAGES.map((s, i) => (
               <div key={s.number} className="relative flex gap-6 pb-8 last:pb-0">
                 {i < STAGES.length - 1 && <div className="absolute left-[15px] top-8 h-full w-px bg-muted-200" />}
-                <div className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy-900 text-sm font-semibold text-white">
+                <div className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-900 text-sm font-semibold text-white">
                   {s.number}
                 </div>
                 <div>
@@ -73,7 +73,7 @@ export function GuidelinesPage() {
           <h2 className="mb-6 border-b border-muted-200 pb-3 text-2xl text-navy-950">What we ask when you register</h2>
           <div className="grid gap-6 md:grid-cols-2">
             {Object.entries(REGISTRATION_FIELDS).map(([title, items]) => (
-              <div key={title} className="rounded-md border border-muted-200 bg-white p-6">
+              <div key={title} className="rounded-xl border border-muted-200 bg-surface p-6">
                 <div className="flex items-center gap-2">
                   <ClipboardList className="h-4 w-4 text-teal-600" />
                   <h3 className="font-sans text-base font-semibold text-navy-950">{title}</h3>
@@ -161,12 +161,12 @@ export function GuidelinesPage() {
           <CheckList items={SUBMISSION_RULES} />
         </section>
 
-        <section className="rounded-md bg-navy-900 px-8 py-10 text-center text-white">
+        <section className="rounded-3xl bg-brand-950 px-8 py-12 text-center text-white">
           <h2 className="text-2xl text-white">Ready to submit?</h2>
           <p className="mt-2 text-blue-100">Create an account, then complete your entry step by step.</p>
           <Link
             to={user ? '/competition' : '/register'}
-            className="mt-6 inline-flex items-center gap-2 rounded bg-white px-6 py-3 font-semibold text-navy-950 hover:bg-blue-50"
+            className="mt-6 inline-flex items-center gap-2 rounded bg-white px-6 py-3 font-semibold text-brand-950 hover:bg-blue-50"
           >
             {user ? 'Go to my entry' : 'Register & submit'} <ArrowRight className="h-4 w-4" />
           </Link>
@@ -190,7 +190,7 @@ function Material({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-md border border-muted-200 bg-white">
+    <div className="rounded-xl border border-muted-200 bg-surface">
       <div className="flex items-center justify-between gap-4 border-b border-muted-200 px-6 py-4">
         <div className="flex items-center gap-3">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-50 text-teal-700">{icon}</span>

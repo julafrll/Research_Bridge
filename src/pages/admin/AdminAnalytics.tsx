@@ -244,7 +244,7 @@ export function AdminAnalytics() {
           label="Quiz Pass Rate"
           value={`${quizPassRate}%`}
           icon={Award}
-          color="bg-blue-100 text-blue-600"
+          color="bg-navy-100 text-navy-600"
         />
         <MetricCard
           label="Avg Quiz Score"
@@ -299,7 +299,7 @@ export function AdminAnalytics() {
                   key={filter}
                   onClick={() => { setVisitorFilter(filter); setVisibleVisitors(10); }}
                   className={`rounded-md px-3 py-1 text-xs font-medium capitalize transition-colors ${
-                    visitorFilter === filter ? 'bg-white text-navy-900 shadow-sm' : 'text-muted-500 hover:text-navy-700'
+                    visitorFilter === filter ? 'bg-surface text-navy-900 shadow-sm' : 'text-muted-500 hover:text-navy-700'
                   }`}
                 >
                   {filter}
