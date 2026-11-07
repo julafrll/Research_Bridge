@@ -14,7 +14,9 @@ import {
   X,
   ShieldCheck,
   BarChart3,
+  Trophy,
 } from 'lucide-react';
+import { FEATURES } from '@/config/features';
 import { useAuth } from '@/contexts/AuthContext';
 import { initials } from '@/lib/utils';
 import { BrandLogo } from '@/components/BrandLogo';
@@ -26,17 +28,20 @@ interface NavItem {
   icon: typeof LayoutDashboard;
 }
 
-const navItems: NavItem[] = [
-  { label: 'Overview', path: '/admin', icon: LayoutDashboard },
-  { label: 'Analytics', path: '/admin/analytics', icon: BarChart3 },
+const allNavItems: (NavItem & { video?: boolean })[] = [
+  { label: 'Overview', path: '/admin', icon: LayoutDashboard, video: true },
+  { label: 'Competition Entries', path: '/admin/competition', icon: Trophy },
+  { label: 'Analytics', path: '/admin/analytics', icon: BarChart3, video: true },
   { label: 'Students', path: '/admin/students', icon: Users },
-  { label: 'Courses & Lessons', path: '/admin/courses', icon: BookOpen },
-  { label: 'Assignments', path: '/admin/assignments', icon: FileText },
-  { label: 'Submissions', path: '/admin/submissions', icon: Inbox },
+  { label: 'Courses & Lessons', path: '/admin/courses', icon: BookOpen, video: true },
+  { label: 'Assignments', path: '/admin/assignments', icon: FileText, video: true },
+  { label: 'Submissions', path: '/admin/submissions', icon: Inbox, video: true },
   { label: 'Research Hub', path: '/admin/research-hub', icon: Microscope },
   { label: 'Announcements', path: '/admin/announcements', icon: Megaphone },
   { label: 'Settings', path: '/admin/settings', icon: Settings },
 ];
+
+const navItems: NavItem[] = allNavItems.filter((i) => FEATURES.videos || !i.video);
 
 export function AdminLayout() {
   const { profile, signOut } = useAuth();

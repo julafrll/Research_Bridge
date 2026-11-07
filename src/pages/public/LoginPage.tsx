@@ -41,7 +41,7 @@ export function LoginPage() {
           <div className="card rounded-xl p-8">
             <h1 className="text-2xl font-bold text-navy-900">Welcome back</h1>
             <p className="mt-2 text-sm text-muted-500">
-              Sign in to continue your learning journey.
+              Sign in to manage your competition entry.
             </p>
 
             {error && (

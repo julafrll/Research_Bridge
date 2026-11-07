@@ -12,7 +12,9 @@ import {
   LogOut,
   Menu,
   X,
+  Trophy,
 } from 'lucide-react';
+import { FEATURES } from '@/config/features';
 import { useAuth } from '@/contexts/AuthContext';
 import { initials } from '@/lib/utils';
 import { BrandLogo } from '@/components/BrandLogo';
@@ -24,16 +26,19 @@ interface NavItem {
   icon: typeof LayoutDashboard;
 }
 
-const navItems: NavItem[] = [
-  { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-  { label: 'Research Bridge Program', path: '/learn', icon: GraduationCap },
-  { label: 'Assignments', path: '/assignments', icon: FileText },
-  { label: 'My Submissions', path: '/my-submissions', icon: Inbox },
+const allNavItems: (NavItem & { video?: boolean })[] = [
+  { label: 'My Competition Entry', path: '/competition', icon: Trophy },
+  { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, video: true },
+  { label: 'Research Bridge Program', path: '/learn', icon: GraduationCap, video: true },
+  { label: 'Assignments', path: '/assignments', icon: FileText, video: true },
+  { label: 'My Submissions', path: '/my-submissions', icon: Inbox, video: true },
   { label: 'Research Hub', path: '/research-hub', icon: Microscope },
   { label: 'Announcements', path: '/announcements', icon: Megaphone },
   { label: 'Notifications', path: '/notifications', icon: Bell },
   { label: 'Profile', path: '/profile', icon: User },
 ];
+
+const navItems: NavItem[] = allNavItems.filter((i) => FEATURES.videos || !i.video);
 
 export function StudentLayout() {
   const { profile, signOut } = useAuth();
