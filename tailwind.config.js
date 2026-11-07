@@ -160,8 +160,8 @@ export default {
     extend: {
       colors: themeColors,
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        serif: ['"Libre Baskerville"', 'Georgia', 'serif'],
+        sans: ['Geist', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
       },
       boxShadow: {
         card: '0 1px 3px 0 rgb(31 63 115 / 0.06), 0 1px 2px 0 rgb(31 63 115 / 0.03)',

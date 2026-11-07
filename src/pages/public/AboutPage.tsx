@@ -41,7 +41,7 @@ export function AboutPage() {
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[220px_1fr]">
         <aside className="hidden lg:block">
           <nav className="sticky top-28 space-y-1 border-l border-muted-200">
-            <p className="mb-3 pl-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-500">On this page</p>
+            <p className="mb-3 pl-4 text-sm font-medium text-muted-500">On this page</p>
             {TOC.map((t) => (
               <a
                 key={t.id}
@@ -112,13 +112,13 @@ export function AboutPage() {
                         {r.criterion}
                         <span className="mt-0.5 block text-xs font-normal text-muted-500 sm:hidden">{r.evaluates}</span>
                       </td>
-                      <td className="px-4 py-3 text-right font-serif font-bold text-navy-900">{r.points}</td>
+                      <td className="px-4 py-3 text-right font-serif text-navy-900">{r.points}</td>
                       <td className="hidden px-4 py-3 text-muted-600 sm:table-cell">{r.evaluates}</td>
                     </tr>
                   ))}
                   <tr className="bg-muted-50">
                     <td className="px-4 py-3 font-semibold text-navy-950">Total</td>
-                    <td className="px-4 py-3 text-right font-serif font-bold text-teal-700">{RUBRIC_TOTAL}</td>
+                    <td className="px-4 py-3 text-right font-serif text-teal-700">{RUBRIC_TOTAL}</td>
                     <td className="hidden sm:table-cell" />
                   </tr>
                 </tbody>
