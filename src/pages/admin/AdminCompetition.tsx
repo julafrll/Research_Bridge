@@ -194,7 +194,7 @@ function StatTile({ label, value, active, onClick }: { label: string; value: num
         active ? 'border-brand-900 bg-brand-900 text-white' : 'border-muted-200 bg-surface hover:border-muted-300'
       }`}
     >
-      <p className={`font-serif text-2xl font-bold ${active ? 'text-white' : 'text-navy-950'}`}>{value}</p>
+      <p className={`font-serif text-2xl ${active ? 'text-white' : 'text-navy-950'}`}>{value}</p>
       <p className={`text-xs ${active ? 'text-blue-100' : 'text-muted-500'}`}>{label}</p>
     </button>
   );
@@ -273,7 +273,7 @@ function EntryModal({
       <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
         <div className="space-y-6">
           <section>
-            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-teal-700">Participant</h4>
+            <h4 className="mb-2 text-sm font-medium text-teal-700">Participant</h4>
             <dl className="divide-y divide-muted-100">
               {row('Full name', entry.full_name)}
               {row('Display name', entry.display_name)}
@@ -284,7 +284,7 @@ function EntryModal({
             </dl>
           </section>
           <section>
-            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-teal-700">Research</h4>
+            <h4 className="mb-2 text-sm font-medium text-teal-700">Research</h4>
             <dl className="divide-y divide-muted-100">
               {row('Category', entry.category)}
               {row('Work type', entry.is_collaborative ? `Collaborative — ${entry.collaborators}` : 'Individual')}
@@ -295,7 +295,7 @@ function EntryModal({
             </p>
           </section>
           <section>
-            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-teal-700">Materials</h4>
+            <h4 className="mb-2 text-sm font-medium text-teal-700">Materials</h4>
             <div className="flex flex-wrap gap-2">
               <Button variant="secondary" size="sm" disabled={!entry.paper_path} onClick={() => open(entry.paper_path)}>
                 <FileText className="h-4 w-4" /> Paper
@@ -311,7 +311,7 @@ function EntryModal({
             </div>
           </section>
           <section>
-            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-teal-700">Declarations & consent</h4>
+            <h4 className="mb-2 text-sm font-medium text-teal-700">Declarations & consent</h4>
             <ul className="space-y-1 text-sm">
               <Flag ok={entry.contribution_confirmed}>Original work / meaningful contribution</Flag>
               <Flag ok={entry.ethics_confirmed}>Ethics & safety requirements</Flag>

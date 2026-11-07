@@ -1,5 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { AnimatedOutlet } from '@/components/PageTransition';
 import { Menu, X, ArrowRight, Mail, Instagram } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { BrandLogo } from '@/components/BrandLogo';
@@ -23,7 +25,6 @@ export function PublicLayout() {
 
   useEffect(() => {
     setOpen(false);
-    window.scrollTo(0, 0);
   }, [location.pathname]);
 
   const accountLink = user ? (isAdmin ? '/admin' : '/dashboard') : '/login';
@@ -34,21 +35,30 @@ export function PublicLayout() {
         <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
           <BrandLogo size="sm" />
 
-          <nav className="hidden items-center gap-1 lg:flex">
+          <nav className="isolate hidden items-center gap-0.5 lg:flex">
             {NAV.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.to === '/'}
                 className={({ isActive }) =>
-                  `relative px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'text-navy-950 after:absolute after:inset-x-3 after:-bottom-[1.05rem] after:h-0.5 after:bg-teal-500'
-                      : 'text-muted-600 hover:text-navy-950'
+                  `relative rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
+                    isActive ? 'text-navy-950' : 'text-muted-600 hover:text-navy-950'
                   }`
                 }
               >
-                {item.label}
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <motion.span
+                        layoutId="nav-pill"
+                        className="absolute inset-0 -z-10 rounded-full bg-navy-100/80"
+                        transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                      />
+                    )}
+                    {item.label}
+                  </>
+                )}
               </NavLink>
             ))}
           </nav>
@@ -113,7 +123,7 @@ export function PublicLayout() {
       </header>
 
       <main className="flex-1">
-        <Outlet />
+        <AnimatedOutlet />
       </main>
 
       <footer className="bg-brand-950 text-blue-100 dark:bg-[#0a1422]">
@@ -163,7 +173,7 @@ export function PublicLayout() {
 function FooterCol({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
-      <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-aqua-300">{title}</h4>
+      <h4 className="mb-4 text-sm font-medium text-aqua-300">{title}</h4>
       <div className="flex flex-col gap-2.5">{children}</div>
     </div>
   );
@@ -180,45 +190,41 @@ function FooterLink({ to, children }: { to: string; children: ReactNode }) {
 /** Navy masthead used at the top of every inner public page. */
 export function PageMasthead({ eyebrow, title, intro }: { eyebrow: string; title: string; intro?: string }) {
   return (
-    <section className="relative overflow-hidden bg-brand-950 text-white">
+    <section className="relative overflow-hidden bg-brand-950 text-white dark:bg-[#0f2140]">
       <HeroBackdrop />
       <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
         <p className="eyebrow-light">{eyebrow}</p>
-        <h1 className="mt-4 max-w-3xl text-3xl text-white md:text-5xl md:leading-[1.15]">{title}</h1>
+        <h1 className="mt-5 max-w-3xl text-[2.75rem] text-white md:text-7xl">{title}</h1>
         {intro && <p className="mt-5 max-w-2xl text-lg leading-relaxed text-blue-100/90">{intro}</p>}
       </div>
     </section>
   );
 }
 
-/** Soft glow + fine grid behind navy heroes. */
+/** Faint drafting grid behind navy surfaces. */
 export function HeroBackdrop() {
   return (
-    <>
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-950 via-brand-900 to-[#16325c]" />
-      <div className="pointer-events-none absolute -right-32 -top-40 h-[28rem] w-[28rem] rounded-full bg-[#4daea5]/25 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-48 -left-24 h-[26rem] w-[26rem] rounded-full bg-[#7895be]/25 blur-3xl" />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.06]"
-        style={{
-          backgroundImage:
-            'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
-          backgroundSize: '56px 56px',
-          maskImage: 'radial-gradient(ellipse at 30% 40%, black 30%, transparent 75%)',
-          WebkitMaskImage: 'radial-gradient(ellipse at 30% 40%, black 30%, transparent 75%)',
-        }}
-      />
-    </>
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 opacity-[0.07]"
+      style={{
+        backgroundImage:
+          'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
+        backgroundSize: '64px 64px',
+        maskImage: 'linear-gradient(to bottom, black, transparent 85%)',
+        WebkitMaskImage: 'linear-gradient(to bottom, black, transparent 85%)',
+      }}
+    />
   );
 }
 
 /** Serif section heading with a thin teal rule, journal-style. */
 export function SectionHeading({ eyebrow, title, action }: { eyebrow?: string; title: string; action?: ReactNode }) {
   return (
-    <div className="mb-8 flex items-end justify-between gap-4 border-b border-muted-200 pb-4">
+    <div className="mb-12 flex items-end justify-between gap-4">
       <div>
-        {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
-        <h2 className="text-2xl text-navy-950">{title}</h2>
+        {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
+        <h2 className="text-4xl text-navy-950 md:text-[2.75rem]">{title}</h2>
       </div>
       {action}
     </div>

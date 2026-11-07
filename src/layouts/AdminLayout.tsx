@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { AnimatedOutlet } from '@/components/PageTransition';
 import {
   LayoutDashboard,
   Users,
@@ -170,7 +171,7 @@ export function AdminLayout() {
         </header>
 
         <main className="flex-1 px-4 py-6 md:px-6 lg:px-8">
-          <Outlet />
+          <AnimatedOutlet />
         </main>
       </div>
     </div>

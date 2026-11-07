@@ -54,7 +54,7 @@ export function GuidelinesPage() {
                   {s.number}
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-teal-600">{s.when}</p>
+                  <p className="text-sm font-medium text-teal-600">{s.when}</p>
                   <h3 className="mt-1 text-lg text-navy-950">{s.title}</h3>
                   <p className="mt-1 leading-relaxed text-muted-600">{s.description}</p>
                 </div>

@@ -75,7 +75,7 @@ export function GalleryPage() {
                     className="group flex flex-col rounded-xl border border-muted-200 bg-surface p-6 transition-shadow hover:shadow-card-hover"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-teal-600">{p.category}</span>
+                      <span className="text-sm font-medium text-teal-600">{p.category}</span>
                       {award && (
                         <span className="inline-flex shrink-0 items-center gap-1 rounded bg-gold-50 px-2 py-0.5 text-xs font-semibold text-gold-700">
                           <Award className="h-3 w-3" /> {award.place}
@@ -160,7 +160,7 @@ export function GalleryProjectPage() {
 
       <header className="mt-6 border-b border-muted-200 pb-8">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="text-xs font-semibold uppercase tracking-wider text-teal-600">{project.category}</span>
+          <span className="text-sm font-medium text-teal-600">{project.category}</span>
           {award && (
             <span className="inline-flex items-center gap-1 rounded bg-gold-50 px-2.5 py-1 text-xs font-semibold text-gold-700">
               <Award className="h-3.5 w-3.5" /> {award.place} — {award.title}

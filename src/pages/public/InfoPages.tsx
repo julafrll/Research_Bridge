@@ -43,7 +43,7 @@ export function JudgesPage() {
                   {j.photoUrl ? (
                     <img src={j.photoUrl} alt={j.name} className="h-14 w-14 rounded-full object-cover" />
                   ) : (
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-navy-100 font-serif text-lg font-bold text-navy-800">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-navy-100 font-serif text-lg text-navy-800">
                       {initials(j.name)}
                     </div>
                   )}
@@ -113,10 +113,10 @@ export function WinnersPage() {
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-700">{a.place}</span>
+                  <span className="text-sm font-medium text-gold-700">{a.place}</span>
                   <Trophy className="h-5 w-5 text-gold-500" />
                 </div>
-                <p className="mt-4 font-serif text-xl font-bold text-navy-950">{a.title}</p>
+                <p className="mt-4 font-serif text-xl text-navy-950">{a.title}</p>
                 <p className="mt-1 text-sm text-muted-600">Prize: {a.prize}</p>
                 <div className="mt-6 border-t border-gold-200/70 pt-5">
                   {winner ? (
@@ -167,7 +167,7 @@ export function ContactPage() {
               <div className="flex items-start gap-3">
                 <Mail className="mt-0.5 h-5 w-5 text-teal-600" />
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-500">Email</p>
+                  <p className="text-sm font-medium text-muted-500">Email</p>
                   {COMPETITION.contactEmail ? (
                     <a href={`mailto:${COMPETITION.contactEmail}`} className="link-teal">
                       {COMPETITION.contactEmail}
@@ -181,7 +181,7 @@ export function ContactPage() {
                 <div className="flex items-start gap-3">
                   <Instagram className="mt-0.5 h-5 w-5 text-teal-600" />
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-500">Instagram</p>
+                    <p className="text-sm font-medium text-muted-500">Instagram</p>
                     <a href={COMPETITION.instagramUrl} target="_blank" rel="noreferrer" className="link-teal">
                       {COMPETITION.instagramHandle || 'Follow us'}
                     </a>
