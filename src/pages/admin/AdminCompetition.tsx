@@ -191,7 +191,7 @@ function StatTile({ label, value, active, onClick }: { label: string; value: num
     <button
       onClick={onClick}
       className={`rounded-lg border px-4 py-3 text-left transition-colors ${
-        active ? 'border-navy-900 bg-navy-900 text-white' : 'border-muted-200 bg-white hover:border-muted-300'
+        active ? 'border-brand-900 bg-brand-900 text-white' : 'border-muted-200 bg-surface hover:border-muted-300'
       }`}
     >
       <p className={`font-serif text-2xl font-bold ${active ? 'text-white' : 'text-navy-950'}`}>{value}</p>

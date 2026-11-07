@@ -205,7 +205,7 @@ export function CompetitionEntryPage() {
           </p>
         </div>
         {entry && (
-          <div className="rounded-md border border-muted-200 bg-white px-4 py-3 text-right">
+          <div className="rounded-md border border-muted-200 bg-surface px-4 py-3 text-right">
             <p className="text-xs uppercase tracking-wider text-muted-500">Submission ID</p>
             <button
               className="mt-0.5 inline-flex items-center gap-1.5 font-mono text-lg font-semibold text-navy-950"
@@ -336,7 +336,7 @@ export function CompetitionEntryPage() {
                   <label
                     key={o.l}
                     className={`flex cursor-pointer items-center gap-2 rounded-md border px-4 py-2.5 text-sm ${
-                      form.is_collaborative === o.v ? 'border-navy-900 bg-navy-50 text-navy-950' : 'border-muted-200 bg-white text-muted-600'
+                      form.is_collaborative === o.v ? 'border-brand-900 bg-navy-50 text-navy-950' : 'border-muted-200 bg-surface text-muted-600'
                     }`}
                   >
                     <input
@@ -475,7 +475,7 @@ function Section({ n, title, done, children }: { n: number; title: string; done:
     <Card>
       <div className="flex items-center justify-between border-b border-muted-200 px-5 py-4">
         <h2 className="flex items-center gap-3 font-sans text-base font-semibold text-navy-950">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-navy-900 text-xs text-white">{n}</span>
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-900 text-xs text-white">{n}</span>
           {title}
         </h2>
         {done && <CheckCircle2 className="h-5 w-5 text-teal-500" />}
@@ -537,7 +537,7 @@ function FileSlot({
   onOpen: () => void;
 }) {
   return (
-    <div className={`rounded-md border-2 border-dashed p-5 ${error ? 'border-error-300 bg-error-50' : fileName ? 'border-teal-300 bg-teal-50/50' : 'border-muted-300 bg-white'}`}>
+    <div className={`rounded-md border-2 border-dashed p-5 ${error ? 'border-error-300 bg-error-50' : fileName ? 'border-teal-300 bg-teal-50/50' : 'border-muted-300 bg-surface'}`}>
       <div className="flex items-center gap-2 text-navy-900">
         <span className="text-teal-600">{icon}</span>
         <span className="text-sm font-semibold">{title}</span>

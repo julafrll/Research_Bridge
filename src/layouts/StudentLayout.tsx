@@ -17,6 +17,7 @@ import {
 import { FEATURES } from '@/config/features';
 import { useAuth } from '@/contexts/AuthContext';
 import { initials } from '@/lib/utils';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { BrandLogo } from '@/components/BrandLogo';
 
 
@@ -57,7 +58,7 @@ export function StudentLayout() {
   return (
     <div className="flex min-h-screen bg-muted-50">
       {/* Desktop sidebar */}
-      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-64 flex-col border-r border-muted-200 bg-white lg:flex">
+      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-64 flex-col border-r border-muted-200 bg-surface lg:flex">
         <div className="flex h-16 items-center gap-2.5 border-b border-muted-200 px-6">
           <BrandLogo size="sm" />
         </div>
@@ -84,6 +85,7 @@ export function StudentLayout() {
               </p>
               <p className="truncate text-xs text-muted-400">Student</p>
             </div>
+            <ThemeToggle className="p-1.5 text-muted-500" />
             <button
               onClick={handleSignOut}
               className="rounded-lg p-1.5 text-muted-400 transition-colors hover:bg-muted-100 hover:text-navy-700"
@@ -99,10 +101,10 @@ export function StudentLayout() {
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
-            className="absolute inset-0 bg-navy-950/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-brand-950/40 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-64 bg-white shadow-elevated animate-slide-down">
+          <aside className="absolute left-0 top-0 h-full w-64 bg-surface shadow-elevated animate-slide-down">
             <div className="flex h-16 items-center justify-between border-b border-muted-200 px-6">
               <BrandLogo size="sm" />
               <button
@@ -140,7 +142,7 @@ export function StudentLayout() {
       {/* Main content */}
       <div className="flex flex-1 flex-col lg:ml-64">
         {/* Mobile header */}
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-muted-200 bg-white/80 px-4 backdrop-blur-md lg:hidden">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-muted-200 bg-surface/80 px-4 backdrop-blur-md lg:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
             className="rounded-lg p-2 text-navy-600 hover:bg-muted-100"
@@ -148,9 +150,12 @@ export function StudentLayout() {
             <Menu className="h-5 w-5" />
           </button>
           <BrandLogo size="sm" />
+          <div className="flex items-center">
+          <ThemeToggle />
           <Link to="/notifications" className="relative rounded-lg p-2 text-navy-600 hover:bg-muted-100">
             <Bell className="h-5 w-5" />
           </Link>
+          </div>
         </header>
 
         <main className="flex-1 px-4 py-6 md:px-6 lg:px-8">

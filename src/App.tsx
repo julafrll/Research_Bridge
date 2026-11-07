@@ -10,6 +10,7 @@ import { GuidelinesPage } from '@/pages/public/GuidelinesPage';
 import { GalleryPage, GalleryProjectPage } from '@/pages/public/GalleryPage';
 import { JudgesPage, WinnersPage, ContactPage } from '@/pages/public/InfoPages';
 import { PublicLayout } from '@/layouts/PublicLayout';
+import { ForgotPasswordPage, ResetPasswordPage } from '@/pages/public/PasswordPages';
 import { CompetitionEntryPage } from '@/pages/student/CompetitionEntryPage';
 import { AdminCompetition } from '@/pages/admin/AdminCompetition';
 import { FEATURES } from '@/config/features';
@@ -63,6 +64,9 @@ function AppRoutes() {
         path="/register"
         element={user ? <Navigate to={isAdmin ? '/admin' : '/dashboard'} replace /> : <RegisterPage />}
       />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      {/* Reachable while signed in: the email link opens a recovery session. */}
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       {/* Student routes */}
       <Route

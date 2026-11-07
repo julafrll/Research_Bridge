@@ -8,6 +8,7 @@ import {
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { siteUrl } from '@/lib/site';
 import type { Profile, UserRole } from '@/types';
 
 interface AuthContextValue {
@@ -18,7 +19,11 @@ interface AuthContextValue {
   loading: boolean;
   isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string
+  ) => Promise<{ error: string | null; needsConfirmation?: boolean }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -65,7 +70,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
+      // A reset link can land on the home page if Supabase's redirect
+      // allow-list doesn't include /reset-password — send it to the form.
+      if (event === 'PASSWORD_RECOVERY' && !window.location.pathname.endsWith('/reset-password')) {
+        window.location.replace(siteUrl('reset-password'));
+        return;
+      }
       (async () => {
         if (!mounted) return;
         setSession(newSession);
@@ -97,6 +108,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
       options: {
         data: { full_name: fullName },
+        // Where the "confirm your email" link sends people back to.
+        emailRedirectTo: siteUrl('competition'),
       },
     });
 
@@ -106,7 +119,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: 'Registration failed. Please try again.' };
     }
 
-    return { error: null };
+    // With email confirmation on, Supabase returns a user but no session.
+    // An empty identities list means the email is already registered.
+    if (!data.session && data.user.identities && data.user.identities.length === 0) {
+      return { error: 'An account with this email already exists. Try signing in or resetting your password.' };
+    }
+
+    return { error: null, needsConfirmation: !data.session };
   }, []);
 
   const signOut = useCallback(async () => {

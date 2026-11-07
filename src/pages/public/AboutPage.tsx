@@ -70,7 +70,7 @@ export function AboutPage() {
           <Block id="categories" title="Research categories">
             <div className="grid gap-3 sm:grid-cols-2">
               {RESEARCH_CATEGORIES.map((c) => (
-                <div key={c} className="rounded-md border border-muted-200 bg-white px-4 py-3 text-sm font-medium text-navy-900">
+                <div key={c} className="rounded-xl border border-muted-200 bg-surface px-4 py-3 text-sm font-medium text-navy-900">
                   {c}
                 </div>
               ))}
@@ -96,9 +96,9 @@ export function AboutPage() {
               Each project is reviewed by at least two judges — researchers, university students with relevant expertise,
               teachers, engineers, or scientists — using the same {RUBRIC_TOTAL}-point rubric.
             </p>
-            <div className="mt-6 overflow-x-auto rounded-md border border-muted-200 bg-white">
+            <div className="mt-6 overflow-x-auto rounded-xl border border-muted-200 bg-surface">
               <table className="w-full text-left text-sm">
-                <thead className="bg-navy-900 text-white">
+                <thead className="bg-brand-900 text-white">
                   <tr>
                     <th className="px-4 py-3 font-semibold">Criterion</th>
                     <th className="px-4 py-3 text-right font-semibold">Points</th>
@@ -145,7 +145,7 @@ export function AboutPage() {
 
           <Block id="conduct" title="Code of conduct">
             <CheckList items={CODE_OF_CONDUCT} />
-            <p className="mt-6 rounded-md border-l-4 border-navy-300 bg-white px-5 py-4 text-sm leading-relaxed text-muted-600">
+            <p className="mt-6 rounded-md border-l-4 border-navy-300 bg-surface px-5 py-4 text-sm leading-relaxed text-muted-600">
               Appearing in the online exhibition does not mean a project has been scientifically validated or endorsed by
               the organizers. Award-winning projects are clearly marked.
             </p>

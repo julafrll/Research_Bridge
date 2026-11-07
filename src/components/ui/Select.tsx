@@ -78,7 +78,7 @@ export function SearchableSelect({
       </button>
       {error && <p className="mt-1.5 text-xs text-error-600">{error}</p>}
       {open && (
-        <div className="absolute z-50 mt-1 w-full max-w-full rounded-lg border border-muted-200 bg-white shadow-elevated animate-slide-down">
+        <div className="absolute z-50 mt-1 w-full max-w-full rounded-lg border border-muted-200 bg-surface shadow-elevated animate-slide-down">
           <div className="border-b border-muted-200 p-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-400" />
@@ -155,10 +155,10 @@ export function ConfirmDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-navy-950/40 backdrop-blur-sm animate-fade-in"
+        className="absolute inset-0 bg-brand-950/40 backdrop-blur-sm animate-fade-in"
         onClick={onCancel}
       />
-      <div className="relative z-10 w-full max-w-md rounded-xl bg-white shadow-elevated animate-slide-up">
+      <div className="relative z-10 w-full max-w-md rounded-xl bg-surface shadow-elevated animate-slide-up">
         <div className="px-6 py-5">
           <h2 className="text-lg font-semibold text-navy-900">{title}</h2>
           <div className="mt-2 text-sm text-muted-600">{message}</div>

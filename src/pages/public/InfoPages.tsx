@@ -21,7 +21,7 @@ export function JudgesPage() {
       />
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         {JUDGES.length === 0 ? (
-          <div className="mx-auto max-w-xl rounded-md border border-dashed border-muted-300 bg-white px-8 py-16 text-center">
+          <div className="mx-auto max-w-xl rounded-2xl border border-dashed border-muted-300 bg-surface px-8 py-16 text-center">
             <UserRound className="mx-auto h-8 w-8 text-teal-500" />
             <h2 className="mt-4 text-2xl text-navy-950">The panel will be introduced soon</h2>
             <p className="mt-3 leading-relaxed text-muted-600">
@@ -38,7 +38,7 @@ export function JudgesPage() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {JUDGES.map((j) => (
-              <div key={j.name} className="rounded-md border border-muted-200 bg-white p-6">
+              <div key={j.name} className="rounded-xl border border-muted-200 bg-surface p-6">
                 <div className="flex items-center gap-4">
                   {j.photoUrl ? (
                     <img src={j.photoUrl} alt={j.name} className="h-14 w-14 rounded-full object-cover" />
@@ -109,7 +109,7 @@ export function WinnersPage() {
               <div
                 key={a.key}
                 className={`flex flex-col rounded-md border p-7 ${
-                  i === 0 ? 'border-gold-300 bg-gold-50' : 'border-muted-200 bg-white'
+                  i === 0 ? 'border-gold-300 bg-gold-50' : 'border-muted-200 bg-surface'
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -161,7 +161,7 @@ export function ContactPage() {
       />
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_1.6fr]">
         <div className="space-y-6">
-          <div className="rounded-md border border-muted-200 bg-white p-6">
+          <div className="rounded-xl border border-muted-200 bg-surface p-6">
             <h2 className="text-xl text-navy-950">Organizing team</h2>
             <div className="mt-5 space-y-4">
               <div className="flex items-start gap-3">
@@ -191,7 +191,7 @@ export function ContactPage() {
             </div>
           </div>
 
-          <div className="rounded-md border-l-4 border-teal-500 bg-white p-6">
+          <div className="rounded-md border-l-4 border-teal-500 bg-surface p-6">
             <h2 className="text-xl text-navy-950">Corrections & removal</h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-700">
               To correct or remove anything published about you or your project, email the organizing team with:

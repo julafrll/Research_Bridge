@@ -19,6 +19,7 @@ import {
 import { FEATURES } from '@/config/features';
 import { useAuth } from '@/contexts/AuthContext';
 import { initials } from '@/lib/utils';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { BrandLogo } from '@/components/BrandLogo';
 
 
@@ -62,8 +63,8 @@ export function AdminLayout() {
   return (
     <div className="flex min-h-screen bg-muted-50">
       {/* Desktop sidebar */}
-      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-64 flex-col border-r border-muted-200 bg-navy-900 lg:flex">
-        <div className="flex h-16 items-center gap-2.5 border-b border-navy-800 px-6">
+      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-64 flex-col border-r border-muted-200 bg-brand-900 lg:flex">
+        <div className="flex h-16 items-center gap-2.5 border-b border-brand-800 px-6">
           <BrandLogo variant="light" size="sm" />
         </div>
         <div className="px-3 pt-3">
@@ -79,8 +80,8 @@ export function AdminLayout() {
               to={item.path}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                 isActive(item.path)
-                  ? 'bg-white text-navy-900'
-                  : 'text-navy-300 hover:bg-white/10 hover:text-white'
+                  ? 'bg-white text-brand-900'
+                  : 'text-brand-300 hover:bg-white/10 hover:text-white'
               }`}
             >
               <item.icon className="h-[18px] w-[18px]" />
@@ -88,7 +89,7 @@ export function AdminLayout() {
             </Link>
           ))}
         </nav>
-        <div className="border-t border-navy-800 p-3">
+        <div className="border-t border-brand-800 p-3">
           <div className="flex items-center gap-3 rounded-lg px-3 py-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-sm font-medium text-white">
               {initials(profile?.full_name || 'Admin')}
@@ -97,11 +98,12 @@ export function AdminLayout() {
               <p className="truncate text-sm font-medium text-white">
                 {profile?.full_name || 'Admin'}
               </p>
-              <p className="truncate text-xs text-navy-400">Administrator</p>
+              <p className="truncate text-xs text-brand-400">Administrator</p>
             </div>
+            <ThemeToggle tone="onDark" className="p-1.5" />
             <button
               onClick={handleSignOut}
-              className="rounded-lg p-1.5 text-navy-400 transition-colors hover:bg-white/10 hover:text-white"
+              className="rounded-lg p-1.5 text-brand-400 transition-colors hover:bg-white/10 hover:text-white"
               title="Sign out"
             >
               <LogOut className="h-4 w-4" />
@@ -114,15 +116,15 @@ export function AdminLayout() {
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
-            className="absolute inset-0 bg-navy-950/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-brand-950/50 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-64 bg-navy-900 shadow-elevated animate-slide-down">
-            <div className="flex h-16 items-center justify-between border-b border-navy-800 px-6">
+          <aside className="absolute left-0 top-0 h-full w-64 bg-brand-900 shadow-elevated animate-slide-down">
+            <div className="flex h-16 items-center justify-between border-b border-brand-800 px-6">
               <BrandLogo variant="light" size="sm" />
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="rounded-lg p-1.5 text-navy-400 hover:bg-white/10"
+                className="rounded-lg p-1.5 text-brand-400 hover:bg-white/10"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -134,8 +136,8 @@ export function AdminLayout() {
                   to={item.path}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                     isActive(item.path)
-                      ? 'bg-white text-navy-900'
-                      : 'text-navy-300 hover:bg-white/10 hover:text-white'
+                      ? 'bg-white text-brand-900'
+                      : 'text-brand-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   <item.icon className="h-[18px] w-[18px]" />
@@ -143,8 +145,8 @@ export function AdminLayout() {
                 </Link>
               ))}
             </nav>
-            <div className="border-t border-navy-800 p-3">
-              <button onClick={handleSignOut} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-navy-300 hover:bg-white/10 hover:text-white">
+            <div className="border-t border-brand-800 p-3">
+              <button onClick={handleSignOut} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-brand-300 hover:bg-white/10 hover:text-white">
                 <LogOut className="h-[18px] w-[18px]" />
                 Sign Out
               </button>
@@ -156,7 +158,7 @@ export function AdminLayout() {
       {/* Main content */}
       <div className="flex flex-1 flex-col lg:ml-64">
         {/* Mobile header */}
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-muted-200 bg-white/80 px-4 backdrop-blur-md lg:hidden">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-muted-200 bg-surface/80 px-4 backdrop-blur-md lg:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
             className="rounded-lg p-2 text-navy-600 hover:bg-muted-100"
@@ -164,7 +166,7 @@ export function AdminLayout() {
             <Menu className="h-5 w-5" />
           </button>
           <BrandLogo href="/admin" size="sm" />
-          <div className="w-9" />
+          <ThemeToggle />
         </header>
 
         <main className="flex-1 px-4 py-6 md:px-6 lg:px-8">

@@ -121,7 +121,7 @@ export function StudentLearn() {
             return (
               <Card key={course.id} hover>
                 <CardBody>
-                  <div className="flex h-32 items-center justify-center rounded-lg bg-gradient-to-br from-navy-700 to-navy-900">
+                  <div className="flex h-32 items-center justify-center rounded-lg bg-gradient-to-br from-brand-700 to-brand-900">
                     <BookOpen className="h-10 w-10 text-white/30" />
                   </div>
                   <h3 className="mt-4 font-semibold text-navy-900">{course.title}</h3>
@@ -479,7 +479,7 @@ function InlineAssignmentRow({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="rounded-md border border-muted-200 bg-white overflow-hidden">
+    <div className="rounded-md border border-muted-200 bg-surface overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors hover:bg-muted-50"
@@ -850,7 +850,7 @@ function QuizPanel({ lessonId }: { lessonId: string }) {
       ) : (
         <div className="mt-4 space-y-4">
           {questions.map((question, index) => (
-            <fieldset key={question.id} className="rounded-lg border border-muted-200 bg-white p-3">
+            <fieldset key={question.id} className="rounded-lg border border-muted-200 bg-surface p-3">
               <legend className="px-1 text-sm font-medium text-navy-900">{index + 1}. {question.question_text}</legend>
               <div className="mt-2 space-y-2">
                 {(options[question.id] ?? []).map((option) => {
@@ -901,10 +901,10 @@ function LessonModal({
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center ${isFullscreen ? '' : 'p-4'}`}>
       <div
-        className="absolute inset-0 bg-navy-950/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-brand-950/40 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className={`relative z-10 w-full overflow-hidden bg-white shadow-elevated animate-slide-up ${isFullscreen ? 'h-full max-h-full rounded-none' : 'max-w-3xl max-h-[90vh] rounded-xl'}`}>
+      <div className={`relative z-10 w-full overflow-hidden bg-surface shadow-elevated animate-slide-up ${isFullscreen ? 'h-full max-h-full rounded-none' : 'max-w-3xl max-h-[90vh] rounded-xl'}`}>
         <div className="border-b border-muted-200 px-6 py-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-navy-900">{lesson.title}</h2>
           <div className="flex items-center gap-1">
@@ -928,11 +928,11 @@ function LessonModal({
         </div>
         <div className={`overflow-y-auto px-6 py-4 space-y-4 ${isFullscreen ? 'h-[calc(100%-73px)]' : 'max-h-[70vh]'}`}>
           {lesson.video_url ? (
-            <div className="aspect-video rounded-lg overflow-hidden bg-navy-900">
+            <div className="aspect-video rounded-lg overflow-hidden bg-brand-900">
               <VideoPlayer url={lesson.video_url} />
             </div>
           ) : (
-            <div className="aspect-video rounded-lg bg-gradient-to-br from-navy-700 to-navy-900 flex items-center justify-center">
+            <div className="aspect-video rounded-lg bg-gradient-to-br from-brand-700 to-brand-900 flex items-center justify-center">
               <PlayCircle className="h-12 w-12 text-white/30" />
             </div>
           )}

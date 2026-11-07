@@ -166,7 +166,7 @@ export function AdminOverview() {
       label: 'Published Courses',
       value: stats.publishedCourses,
       icon: BookOpen,
-      color: 'bg-blue-100 text-blue-600',
+      color: 'bg-navy-100 text-navy-600',
       link: '/admin/courses',
     },
     {

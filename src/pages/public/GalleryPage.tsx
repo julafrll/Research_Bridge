@@ -41,7 +41,7 @@ export function GalleryPage() {
             <Spinner />
           </div>
         ) : projects.length === 0 ? (
-          <div className="mx-auto max-w-xl rounded-md border border-dashed border-muted-300 bg-white px-8 py-16 text-center">
+          <div className="mx-auto max-w-xl rounded-2xl border border-dashed border-muted-300 bg-surface px-8 py-16 text-center">
             <Microscope className="mx-auto h-8 w-8 text-teal-500" />
             <h2 className="mt-4 text-2xl text-navy-950">The gallery opens with the results</h2>
             <p className="mt-3 leading-relaxed text-muted-600">
@@ -72,7 +72,7 @@ export function GalleryPage() {
                   <Link
                     key={p.id}
                     to={`/gallery/${p.id}`}
-                    className="group flex flex-col rounded-md border border-muted-200 bg-white p-6 transition-shadow hover:shadow-card-hover"
+                    className="group flex flex-col rounded-xl border border-muted-200 bg-surface p-6 transition-shadow hover:shadow-card-hover"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-xs font-semibold uppercase tracking-wider text-teal-600">{p.category}</span>
@@ -105,7 +105,7 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
     <button
       onClick={onClick}
       className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
-        active ? 'border-navy-900 bg-navy-900 text-white' : 'border-muted-300 bg-white text-navy-800 hover:border-navy-400'
+        active ? 'border-brand-900 bg-brand-900 text-white' : 'border-muted-300 bg-surface text-navy-800 hover:border-navy-400'
       }`}
     >
       {children}
@@ -189,7 +189,7 @@ export function GalleryProjectPage() {
               <Download className="h-4 w-4" /> Open PDF
             </a>
           </div>
-          <div className="aspect-[16/9] overflow-hidden rounded-md border border-muted-200 bg-white">
+          <div className="aspect-[16/9] overflow-hidden rounded-xl border border-muted-200 bg-surface">
             <iframe src={posterUrl} title="Poster" className="h-full w-full" />
           </div>
         </section>
@@ -211,7 +211,7 @@ export function GalleryProjectPage() {
             href={paperUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded border border-muted-300 bg-white px-4 py-2.5 text-sm font-medium text-navy-900 hover:border-navy-400"
+            className="inline-flex items-center gap-2 rounded border border-muted-300 bg-surface px-4 py-2.5 text-sm font-medium text-navy-900 hover:border-navy-400"
           >
             <FileText className="h-4 w-4 text-teal-600" /> Read the full paper
           </a>
