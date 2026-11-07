@@ -43,7 +43,7 @@ export function JudgesPage() {
                   {j.photoUrl ? (
                     <img src={j.photoUrl} alt={j.name} className="h-14 w-14 rounded-full object-cover" />
                   ) : (
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-navy-100 font-serif text-lg text-navy-800">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-navy-100 font-serif font-medium text-lg text-navy-800">
                       {initials(j.name)}
                     </div>
                   )}
@@ -116,7 +116,7 @@ export function WinnersPage() {
                   <span className="text-sm font-medium text-gold-700">{a.place}</span>
                   <Trophy className="h-5 w-5 text-gold-500" />
                 </div>
-                <p className="mt-4 font-serif text-xl text-navy-950">{a.title}</p>
+                <p className="mt-4 font-serif font-medium text-xl text-navy-950">{a.title}</p>
                 <p className="mt-1 text-sm text-muted-600">Prize: {a.prize}</p>
                 <div className="mt-6 border-t border-gold-200/70 pt-5">
                   {winner ? (
