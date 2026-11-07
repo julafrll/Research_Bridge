@@ -1,11 +1,12 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowRight, ArrowUpRight, Menu, X } from 'lucide-react';
 import { AnimatedOutlet } from '@/components/PageTransition';
-import { Menu, X, ArrowRight, Mail, Instagram } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { BrandLogo } from '@/components/BrandLogo';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { BridgeArch, EASE, Reveal } from '@/components/editorial';
 import { COMPETITION } from '@/config/competition';
 
 const NAV = [
@@ -18,45 +19,82 @@ const NAV = [
   { label: 'Contact', to: '/contact' },
 ];
 
+function useScrolled(threshold = 12) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > threshold);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [threshold]);
+  return scrolled;
+}
+
 export function PublicLayout() {
   const { user, isAdmin } = useAuth();
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const scrolled = useScrolled();
 
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
 
+  // Lock page scroll while the mobile menu is open.
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
   const accountLink = user ? (isAdmin ? '/admin' : '/dashboard') : '/login';
 
   return (
     <div className="flex min-h-screen flex-col bg-muted-50">
-      <header className="sticky top-0 z-40 border-b border-muted-200/80 bg-muted-50/85 backdrop-blur-lg">
-        <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-surface focus:px-4 focus:py-2 focus:text-sm"
+      >
+        Skip to content
+      </a>
+
+      <header
+        className={`sticky top-0 z-40 transition-[background-color,border-color,box-shadow] duration-300 ${
+          scrolled || open
+            ? 'border-b border-muted-200 bg-muted-50/90 backdrop-blur-xl'
+            : 'border-b border-transparent bg-muted-50'
+        }`}
+      >
+        <div
+          className={`mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 transition-[height] duration-300 sm:px-8 ${
+            scrolled ? 'h-16' : 'h-20'
+          }`}
+        >
           <BrandLogo size="sm" />
 
-          <nav className="isolate hidden items-center gap-0.5 lg:flex">
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
             {NAV.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.to === '/'}
                 className={({ isActive }) =>
-                  `relative rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
-                    isActive ? 'text-navy-950' : 'text-muted-600 hover:text-navy-950'
+                  `relative px-3 py-2 text-[14px] font-medium transition-colors duration-200 ${
+                    isActive ? 'text-navy-950' : 'text-muted-500 hover:text-navy-950'
                   }`
                 }
               >
                 {({ isActive }) => (
                   <>
+                    {item.label}
                     {isActive && (
                       <motion.span
-                        layoutId="nav-pill"
-                        className="absolute inset-0 -z-10 rounded-full bg-navy-100/80"
-                        transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                        layoutId="nav-underline"
+                        className="absolute inset-x-3 -bottom-0.5 h-[2px] rounded-full bg-teal-500"
+                        transition={{ type: 'spring', stiffness: 500, damping: 38 }}
                       />
                     )}
-                    {item.label}
                   </>
                 )}
               </NavLink>
@@ -65,73 +103,121 @@ export function PublicLayout() {
 
           <div className="hidden items-center gap-1 lg:flex">
             <ThemeToggle />
-            <Link to={accountLink} className="rounded-lg px-3 py-2 text-sm font-medium text-navy-800 hover:text-navy-950">
+            <Link to={accountLink} className="btn-ghost">
               {user ? 'My account' : 'Sign in'}
             </Link>
             {!user && (
-              <Link
-                to="/register"
-                className="ml-1 inline-flex items-center gap-1.5 rounded-full bg-brand-950 px-5 py-2 text-sm font-semibold text-white shadow-card transition-all hover:bg-brand-900 hover:shadow-card-hover dark:bg-teal-500 dark:text-muted-50 dark:hover:bg-teal-400"
-              >
-                Register <ArrowRight className="h-4 w-4" />
+              <Link to="/register" className="btn-primary group">
+                Register <ArrowRight className="arrow" />
               </Link>
             )}
           </div>
 
-          <div className="flex items-center lg:hidden">
+          <div className="flex items-center gap-1 lg:hidden">
             <ThemeToggle />
             <button
-              className="rounded-lg p-2 text-navy-900 hover:bg-muted-100"
+              className="relative flex h-10 w-10 items-center justify-center rounded-md text-navy-950 hover:bg-muted-100"
               onClick={() => setOpen((v) => !v)}
               aria-label={open ? 'Close menu' : 'Open menu'}
+              aria-expanded={open}
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
-
-        {open && (
-          <div className="border-t border-muted-200 bg-surface px-4 py-3 lg:hidden animate-slide-down">
-            <nav className="flex flex-col">
-              {NAV.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.to === '/'}
-                  className={({ isActive }) =>
-                    `border-l-2 px-3 py-2.5 text-sm font-medium ${
-                      isActive ? 'border-teal-500 text-navy-950' : 'border-transparent text-muted-600'
-                    }`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-            </nav>
-            <div className="mt-3 flex gap-2 border-t border-muted-200 pt-3">
-              <Link to={accountLink} className="btn-secondary flex-1">
-                {user ? 'My account' : 'Sign in'}
-              </Link>
-              {!user && (
-                <Link to="/register" className="btn-primary flex-1">
-                  Register
-                </Link>
-              )}
-            </div>
-          </div>
-        )}
       </header>
 
-      <main className="flex-1">
+      {/* Mobile menu: full-screen, large serif links */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="fixed inset-0 z-30 flex flex-col overflow-y-auto bg-muted-50 px-5 pb-10 pt-24 sm:px-8 lg:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
+          >
+            <nav className="flex flex-col" aria-label="Main">
+              {NAV.map((item, i) => (
+                <motion.div
+                  key={item.to}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, ease: EASE, delay: 0.03 * i }}
+                >
+                  <NavLink
+                    to={item.to}
+                    end={item.to === '/'}
+                    className={({ isActive }) =>
+                      `flex items-baseline justify-between border-b border-muted-200 py-4 ${
+                        isActive ? 'text-navy-950' : 'text-navy-700'
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <span className="display text-4xl">{item.label}</span>
+                        {isActive && <span className="h-2 w-2 rounded-full bg-teal-500" />}
+                      </>
+                    )}
+                  </NavLink>
+                </motion.div>
+              ))}
+            </nav>
+            <motion.div
+              className="mt-auto grid grid-cols-2 gap-3 pt-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.25 }}
+            >
+              <Link to={accountLink} className="btn-secondary py-3.5">
+                {user ? 'My account' : 'Sign in'}
+              </Link>
+              {!user ? (
+                <Link to="/register" className="btn-primary py-3.5">
+                  Register
+                </Link>
+              ) : (
+                <span />
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <main id="main" className="flex-1">
         <AnimatedOutlet />
       </main>
 
-      <footer className="bg-brand-950 text-blue-100 dark:bg-[#0a1422]">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
-          <div>
+      <SiteFooter />
+    </div>
+  );
+}
+
+/* ----------------------------------------------------------------------------
+ * Footer
+ * --------------------------------------------------------------------------*/
+
+function SiteFooter() {
+  const year = new Date().getFullYear();
+  return (
+    <footer className="grain overflow-hidden bg-ink text-blue-100">
+      <div className="mx-auto max-w-7xl px-5 pt-20 sm:px-8">
+        <Reveal className="grid items-end gap-10 border-b border-white/10 pb-16 lg:grid-cols-[1.4fr_1fr]">
+          <p className="display text-5xl leading-[1.02] text-white sm:text-6xl lg:text-7xl">
+            From curiosity
+            <br />
+            to discovery.
+          </p>
+          <div className="h-28 w-full max-w-sm justify-self-start lg:justify-self-end">
+            <BridgeArch animate={false} traveller={false} stroke="faint" />
+          </div>
+        </Reveal>
+
+        <div className="grid gap-12 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+          <div className="max-w-xs">
             <BrandLogo variant="light" size="sm" />
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-blue-200">
-              {COMPETITION.name} — an international student research competition with professional judging.
+            <p className="mt-5 text-sm leading-relaxed text-blue-200">
+              {COMPETITION.name}. Students from any country submit original research, scored by professional judges.
             </p>
           </div>
           <FooterCol title="Competition">
@@ -145,63 +231,92 @@ export function PublicLayout() {
             <FooterLink to="/winners">Winners</FooterLink>
             <FooterLink to="/judges">Judges</FooterLink>
           </FooterCol>
-          <FooterCol title="Connect">
-            <FooterLink to="/contact">Contact & FAQ</FooterLink>
+          <FooterCol title="Contact">
+            <FooterLink to="/contact">Questions and FAQ</FooterLink>
             {COMPETITION.contactEmail && (
-              <a href={`mailto:${COMPETITION.contactEmail}`} className="flex items-center gap-2 text-sm text-blue-200 hover:text-white">
-                <Mail className="h-3.5 w-3.5" /> Email us
+              <a href={`mailto:${COMPETITION.contactEmail}`} className="text-sm text-blue-200 transition-colors hover:text-white">
+                {COMPETITION.contactEmail}
               </a>
             )}
             {COMPETITION.instagramUrl && (
-              <a href={COMPETITION.instagramUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-blue-200 hover:text-white">
-                <Instagram className="h-3.5 w-3.5" /> Instagram
+              <a href={COMPETITION.instagramUrl} target="_blank" rel="noreferrer" className="group inline-flex items-center gap-1 text-sm text-blue-200 transition-colors hover:text-white">
+                Instagram <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </a>
             )}
           </FooterCol>
         </div>
-        <div className="border-t border-white/10">
-          <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-xs text-blue-300 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <span>© {new Date().getFullYear()} Research Bridge. All rights reserved.</span>
-            <span className="font-serif italic">{COMPETITION.tagline}</span>
-          </div>
+
+        <div className="flex flex-col gap-2 border-t border-white/10 py-6 text-[13px] text-blue-300 sm:flex-row sm:justify-between">
+          <span>© {year} Research Bridge</span>
+          <span>{COMPETITION.edition}</span>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
   );
 }
 
 function FooterCol({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
-      <h4 className="mb-4 text-sm font-medium text-aqua-300">{title}</h4>
-      <div className="flex flex-col gap-2.5">{children}</div>
+      <h4 className="mb-5 text-[13px] font-medium text-aqua-300">{title}</h4>
+      <div className="flex flex-col items-start gap-3">{children}</div>
     </div>
   );
 }
 
 function FooterLink({ to, children }: { to: string; children: ReactNode }) {
   return (
-    <Link to={to} className="text-sm text-blue-200 transition-colors hover:text-white">
+    <Link
+      to={to}
+      className="bg-gradient-to-r from-white to-white bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-px text-sm text-blue-200 transition-[background-size,color] duration-300 hover:bg-[length:100%_1px] hover:text-white"
+    >
       {children}
     </Link>
   );
 }
 
-/** Navy masthead used at the top of every inner public page. */
+/* ----------------------------------------------------------------------------
+ * Page masthead — light, editorial, with a margin rail.
+ * --------------------------------------------------------------------------*/
+
 export function PageMasthead({ eyebrow, title, intro }: { eyebrow: string; title: string; intro?: string }) {
   return (
-    <section className="relative overflow-hidden bg-brand-950 text-white dark:bg-[#0f2140]">
-      <HeroBackdrop />
-      <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-        <p className="eyebrow-light">{eyebrow}</p>
-        <h1 className="mt-5 max-w-3xl text-[2.75rem] text-white md:text-7xl">{title}</h1>
-        {intro && <p className="mt-5 max-w-2xl text-lg leading-relaxed text-blue-100/90">{intro}</p>}
+    <section className="relative overflow-hidden">
+      <div className="mx-auto grid max-w-7xl gap-x-12 gap-y-6 px-5 pb-16 pt-14 sm:px-8 md:pb-24 md:pt-20 lg:grid-cols-[11rem_1fr]">
+        <motion.p
+          className="text-[13px] font-medium text-teal-600 lg:pt-5"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {eyebrow}
+        </motion.p>
+        <div>
+          <motion.h1
+            className="max-w-4xl text-[3.25rem] leading-[0.98] sm:text-7xl lg:text-[5.5rem]"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: EASE }}
+          >
+            {title}
+          </motion.h1>
+          {intro && (
+            <motion.p
+              className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-600 md:text-xl"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: EASE, delay: 0.15 }}
+            >
+              {intro}
+            </motion.p>
+          )}
+        </div>
       </div>
     </section>
   );
 }
 
-/** Faint drafting grid behind navy surfaces. */
+/** Faint drafting grid behind ink surfaces. */
 export function HeroBackdrop() {
   return (
     <div
@@ -218,13 +333,13 @@ export function HeroBackdrop() {
   );
 }
 
-/** Serif section heading with a thin teal rule, journal-style. */
+/** Heading for a block inside a page (inner pages). */
 export function SectionHeading({ eyebrow, title, action }: { eyebrow?: string; title: string; action?: ReactNode }) {
   return (
-    <div className="mb-12 flex items-end justify-between gap-4">
+    <div className="mb-10 flex items-end justify-between gap-4">
       <div>
-        {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
-        <h2 className="text-4xl text-navy-950 md:text-[2.75rem]">{title}</h2>
+        {eyebrow && <p className="mb-3 text-[13px] font-medium text-teal-600">{eyebrow}</p>}
+        <h2 className="text-4xl md:text-5xl">{title}</h2>
       </div>
       {action}
     </div>
