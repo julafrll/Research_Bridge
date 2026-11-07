@@ -4,6 +4,7 @@ import { ArrowLeft, Check } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { HeroBackdrop } from '@/layouts/PublicLayout';
+import { BridgeArch } from '@/components/editorial';
 import { COMPETITION } from '@/config/competition';
 
 const POINTS = [
@@ -17,20 +18,21 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
   return (
     <div className="grid min-h-screen bg-muted-50 lg:grid-cols-[1fr_1.1fr]">
       {/* Brand panel */}
-      <aside className="relative hidden overflow-hidden bg-brand-950 text-white lg:flex lg:flex-col lg:justify-between lg:p-12">
+      <aside className="grain relative hidden overflow-hidden bg-ink text-white lg:flex lg:flex-col lg:justify-between lg:p-14">
         <HeroBackdrop />
         <div className="relative">
           <BrandLogo variant="light" size="md" />
         </div>
         <div className="relative max-w-md">
-          <p className="eyebrow-light">{COMPETITION.name}</p>
-          <h2 className="mt-4 text-4xl leading-tight text-white">
-            From curiosity <span className="italic text-aqua-200">to discovery.</span>
-          </h2>
+          <div className="mb-10 h-24 w-64">
+            <BridgeArch animate={false} traveller />
+          </div>
+          <p className="text-[13px] font-medium text-aqua-300">{COMPETITION.name}</p>
+          <h2 className="mt-4 text-5xl leading-[1.02] text-white">From curiosity to discovery.</h2>
           <ul className="mt-8 space-y-4">
             {POINTS.map((p) => (
               <li key={p} className="flex items-start gap-3 text-blue-100">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#4daea5]/25">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#4daea5]/50">
                   <Check className="h-3 w-3 text-aqua-200" />
                 </span>
                 {p}
@@ -54,8 +56,8 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
             <div className="mb-8 lg:hidden">
               <BrandLogo size="md" />
             </div>
-            <h1 className="text-3xl text-navy-950">{title}</h1>
-            {subtitle && <p className="mt-2 text-muted-500">{subtitle}</p>}
+            <h1 className="text-4xl md:text-5xl">{title}</h1>
+            {subtitle && <p className="mt-3 text-[17px] leading-relaxed text-muted-600">{subtitle}</p>}
             <div className="mt-8">{children}</div>
           </div>
         </div>

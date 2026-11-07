@@ -15,10 +15,10 @@ import plugin from 'tailwindcss/plugin.js';
 const THEMED = {
   surface: { DEFAULT: ['#ffffff', '#131c26'] },
   muted: {
-    50: ['#fbfbfa', '#0c1219'],
-    100: ['#f3f3f1', '#18222d'],
-    200: ['#e4e5e4', '#263240'],
-    300: ['#d2d5d7', '#36445a'],
+    50: ['#f6f7f9', '#0b1118'],
+    100: ['#eef0f4', '#161f2b'],
+    200: ['#e2e6ec', '#243041'],
+    300: ['#cdd3dc', '#34425a'],
     400: ['#aeb5bd', '#6b7a8c'],
     500: ['#747e89', '#93a0ae'],
     600: ['#56616d', '#aeb8c3'],
@@ -93,6 +93,8 @@ const THEMED = {
 };
 
 const STATIC = {
+  // Deep ink for the darkest brand surfaces (hero, closing, footer).
+  ink: { DEFAULT: '#0d1f3f', 2: '#132a52', 3: '#1b3766' },
   // Navy that stays navy in dark mode (solid brand surfaces).
   brand: {
     50: '#f4f7fb',
@@ -160,13 +162,26 @@ export default {
     extend: {
       colors: themeColors,
       fontFamily: {
-        sans: ['Geist', 'system-ui', '-apple-system', 'sans-serif'],
-        serif: ['Newsreader', 'Georgia', 'serif'],
+        sans: ['"Geist Variable"', 'Geist', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['"Newsreader Variable"', 'Newsreader', 'Georgia', 'serif'],
+      },
+      // Tight, deliberate corners everywhere instead of soft SaaS rounding.
+      borderRadius: {
+        sm: '2px',
+        DEFAULT: '3px',
+        md: '4px',
+        lg: '5px',
+        xl: '6px',
+        '2xl': '8px',
+        '3xl': '10px',
       },
       boxShadow: {
-        card: '0 1px 3px 0 rgb(31 63 115 / 0.06), 0 1px 2px 0 rgb(31 63 115 / 0.03)',
-        'card-hover': '0 8px 24px 0 rgb(31 63 115 / 0.10), 0 2px 6px 0 rgb(31 63 115 / 0.05)',
-        elevated: '0 16px 40px 0 rgb(31 63 115 / 0.14), 0 4px 12px 0 rgb(31 63 115 / 0.06)',
+        card: '0 1px 2px 0 rgb(13 31 63 / 0.04)',
+        'card-hover': '0 18px 40px -18px rgb(13 31 63 / 0.28), 0 2px 6px -2px rgb(13 31 63 / 0.06)',
+        elevated: '0 40px 80px -32px rgb(13 31 63 / 0.45), 0 8px 20px -8px rgb(13 31 63 / 0.12)',
+      },
+      transitionTimingFunction: {
+        out: 'cubic-bezier(0.22, 1, 0.36, 1)',
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out',

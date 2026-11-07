@@ -64,7 +64,7 @@ export function AdminLayout() {
   return (
     <div className="flex min-h-screen bg-muted-50">
       {/* Desktop sidebar */}
-      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-64 flex-col border-r border-muted-200 bg-brand-900 lg:flex">
+      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-64 flex-col border-r border-muted-200 bg-ink lg:flex">
         <div className="flex h-16 items-center gap-2.5 border-b border-brand-800 px-6">
           <BrandLogo variant="light" size="sm" />
         </div>
@@ -120,7 +120,7 @@ export function AdminLayout() {
             className="absolute inset-0 bg-brand-950/50 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-64 bg-brand-900 shadow-elevated animate-slide-down">
+          <aside className="absolute left-0 top-0 h-full w-64 bg-ink shadow-elevated animate-slide-down">
             <div className="flex h-16 items-center justify-between border-b border-brand-800 px-6">
               <BrandLogo variant="light" size="sm" />
               <button

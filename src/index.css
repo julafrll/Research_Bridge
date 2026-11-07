@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap');
+/* Fonts are self-hosted (see main.tsx): Newsreader for display, Geist for text. */
 
 @tailwind base;
 @tailwind components;
@@ -10,33 +10,60 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   body {
-    @apply bg-muted-50 text-navy-900 font-sans antialiased;
-    font-feature-settings: 'ss01', 'cv11';
-    line-height: 1.5;
-    background-image: radial-gradient(circle at top right, rgba(113, 144, 187, 0.08), transparent 34rem);
+    @apply bg-muted-50 font-sans text-navy-900 antialiased;
+    font-feature-settings: 'ss01', 'cv11', 'tnum' 0;
+    line-height: 1.55;
   }
 
-  /* Display: Newsreader, medium weight so headings read clearly on every screen. */
-  h1, h2 {
-    @apply font-serif font-medium;
-    line-height: 1.1;
-    letter-spacing: -0.015em;
+  /*
+   * Display type: Newsreader with optical sizing, so large headlines get the
+   * high-contrast display cut and small ones stay sturdy.
+   */
+  h1,
+  h2 {
+    @apply font-serif font-medium text-navy-950;
+    font-optical-sizing: auto;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
   }
 
-  h3, h4, h5, h6 {
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-sans font-semibold tracking-tight;
-    line-height: 1.2;
+    line-height: 1.25;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   ::selection {
     @apply bg-teal-200 text-navy-950;
   }
 
-  /* Custom scrollbar */
+  :focus-visible {
+    outline: 2px solid rgb(var(--c-teal-500));
+    outline-offset: 3px;
+  }
+
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
 
   ::-webkit-scrollbar-track {
@@ -44,70 +71,110 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted-300 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-400;
+    @apply rounded-full border-[3px] border-solid border-transparent bg-muted-300 bg-clip-padding;
   }
 }
 
 @layer components {
+  /* ---- Buttons ---------------------------------------------------------- */
+
+  .btn {
+    @apply relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2.5 text-sm font-medium tracking-[-0.005em] transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-out active:translate-y-px disabled:pointer-events-none disabled:opacity-50;
+  }
+
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-900 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-navy-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98];
+    @apply btn bg-ink text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_1px_2px_rgb(13_31_63/0.2)] hover:bg-ink-3 dark:bg-teal-500 dark:text-muted-50 dark:hover:bg-teal-400;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-muted-200 bg-surface px-4 py-2.5 text-sm font-medium text-navy-700 transition-all hover:border-muted-300 hover:bg-muted-50 focus:outline-none focus:ring-2 focus:ring-navy-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98];
+    @apply btn border border-muted-300 bg-surface text-navy-950 hover:border-navy-950 dark:hover:border-navy-700;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-navy-600 transition-all hover:bg-muted-100 hover:text-navy-900 focus:outline-none focus:ring-2 focus:ring-navy-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply btn text-navy-700 hover:bg-muted-100 hover:text-navy-950;
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-error-500 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-error-600 focus:outline-none focus:ring-2 focus:ring-error-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98];
+    @apply btn bg-error-600 text-white hover:bg-error-700 dark:text-muted-50;
   }
+
+  /* Large call-to-action on ink surfaces. */
+  .btn-light {
+    @apply btn bg-white px-6 py-3.5 text-[15px] font-semibold text-ink hover:bg-[#d6f1ed];
+  }
+
+  .btn-outline-light {
+    @apply btn border border-white/25 px-6 py-3.5 text-[15px] font-semibold text-white hover:border-white/70 hover:bg-white/5;
+  }
+
+  /* Arrow that nudges forward on hover; put inside any .group button/link. */
+  .arrow {
+    @apply h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-1;
+  }
+
+  /* ---- Forms ------------------------------------------------------------ */
 
   .input-field {
-    @apply w-full rounded-lg border border-muted-200 bg-surface px-3.5 py-2.5 text-sm text-navy-900 placeholder-muted-400 transition-all focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-200 focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50;
-  }
-
-  .card {
-    @apply rounded-xl border border-muted-200 bg-surface shadow-card transition-all;
-  }
-
-  .card-hover {
-    @apply rounded-xl border border-muted-200 bg-surface shadow-card transition-all hover:shadow-card-hover hover:border-muted-300;
+    @apply w-full rounded-md border border-muted-300 bg-surface px-3.5 py-2.5 text-[15px] text-navy-950 shadow-[0_1px_0_rgb(13_31_63/0.02)] transition-[border-color,box-shadow] duration-200 placeholder:text-muted-400 hover:border-muted-400 focus:border-navy-950 focus:shadow-[0_0_0_4px_rgb(var(--c-navy-950)/0.08)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .label-text {
-    @apply mb-1.5 block text-sm font-medium text-navy-700;
+    @apply mb-1.5 block text-[13px] font-medium text-navy-900;
   }
 
+  /* ---- Surfaces ----------------------------------------------------------- */
+
+  .card {
+    @apply rounded-lg border border-muted-200 bg-surface;
+  }
+
+  .card-hover {
+    @apply rounded-lg border border-muted-200 bg-surface transition-[border-color,box-shadow,transform] duration-300 ease-out hover:-translate-y-0.5 hover:border-muted-300 hover:shadow-card-hover;
+  }
+
+  /* Fine film grain for ink surfaces. Parent needs `relative`. */
+  .grain {
+    @apply relative isolate;
+  }
+  .grain::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 -z-10 opacity-[0.16] mix-blend-overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---- Navigation (dashboards) ----------------------------------------- */
+
   .nav-link {
-    @apply flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-navy-500 transition-all hover:bg-muted-100 hover:text-navy-900;
+    @apply flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-navy-600 transition-colors hover:bg-muted-100 hover:text-navy-950;
   }
 
   .nav-link-active {
-    @apply bg-brand-900 text-white shadow-sm hover:bg-brand-800 hover:text-white;
+    @apply bg-navy-100 text-navy-950 shadow-[inset_2px_0_0_rgb(var(--c-teal-500))] hover:bg-navy-100;
   }
 
-  /* Small sentence-case kicker with a short "bridge" stroke before it. */
+  /* ---- Type helpers ------------------------------------------------------ */
+
+  /* Small kicker with a short "bridge" stroke before it. */
   .eyebrow {
-    @apply inline-flex items-center gap-2.5 text-sm font-medium text-teal-600 before:h-px before:w-6 before:bg-current before:content-[''];
+    @apply inline-flex items-center gap-2.5 text-[13px] font-medium text-teal-600 before:h-px before:w-6 before:bg-current before:content-[''];
   }
 
   .eyebrow-light {
-    @apply inline-flex items-center gap-2.5 text-sm font-medium text-aqua-200 before:h-px before:w-6 before:bg-current before:content-[''];
+    @apply inline-flex items-center gap-2.5 text-[13px] font-medium text-aqua-200 before:h-px before:w-6 before:bg-current before:content-[''];
+  }
+
+  .display {
+    @apply font-serif font-medium tracking-[-0.025em];
+    font-optical-sizing: auto;
   }
 
   .prose-rb p {
-    @apply text-muted-700 leading-relaxed;
+    @apply leading-relaxed text-muted-700;
   }
 
+  /* Link with an underline that draws in from the left. */
   .link-teal {
-    @apply font-medium text-teal-600 underline-offset-4 hover:text-teal-700 hover:underline;
+    @apply bg-gradient-to-r from-current to-current bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-px font-medium text-teal-600 transition-[background-size,color] duration-300 ease-out hover:bg-[length:100%_1px] hover:text-teal-700;
   }
 
   .brand-rule {

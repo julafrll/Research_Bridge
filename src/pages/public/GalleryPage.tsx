@@ -1,12 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Award, Download, ExternalLink, FileText, Microscope } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowLeft, ArrowUpRight, Download, ExternalLink, FileText } from 'lucide-react';
 import { PageMasthead } from '@/layouts/PublicLayout';
 import { Spinner } from '@/components/ui';
+import { BridgeArch, EASE, Reveal } from '@/components/editorial';
 import { FEATURES } from '@/config/features';
-import { RESEARCH_CATEGORIES } from '@/config/competition';
+import { RESEARCH_CATEGORIES, CATEGORY_SHORT, type CompetitionCategory } from '@/config/competition';
 import { awardLabel, fetchGallery, signedFileUrl } from '@/lib/competition';
 import type { GalleryProject } from '@/types/competition';
+
+const AWARD_MARK: Record<string, string> = {
+  first: 'bg-gold-400',
+  second: 'bg-muted-400',
+  third: 'bg-[#c08552]',
+};
 
 export function GalleryPage() {
   const [projects, setProjects] = useState<GalleryProject[] | null>(null);
@@ -27,6 +35,15 @@ export function GalleryPage() {
     return m;
   }, [projects]);
 
+  const tabs = [
+    { key: 'all', label: 'All fields', count: projects?.length ?? 0 },
+    ...RESEARCH_CATEGORIES.filter((c) => counts.has(c)).map((c) => ({
+      key: c,
+      label: CATEGORY_SHORT[c as CompetitionCategory] ?? c,
+      count: counts.get(c) ?? 0,
+    })),
+  ];
+
   return (
     <>
       <PageMasthead
@@ -35,81 +52,100 @@ export function GalleryPage() {
         intro="Posters and abstracts from participants who agreed to share their work, organized by research field."
       />
 
-      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+      <div className="mx-auto max-w-7xl px-5 pb-28 sm:px-8">
         {projects === null ? (
-          <div className="flex justify-center py-20">
+          <div className="flex justify-center border-t border-muted-200 py-24">
             <Spinner />
           </div>
         ) : projects.length === 0 ? (
-          <div className="mx-auto max-w-xl rounded-2xl border border-dashed border-muted-300 bg-surface px-8 py-16 text-center">
-            <Microscope className="mx-auto h-8 w-8 text-teal-500" />
-            <h2 className="mt-4 text-2xl text-navy-950">The gallery opens with the results</h2>
-            <p className="mt-3 leading-relaxed text-muted-600">
-              Approved posters and abstracts will be published here after judging. Only materials whose authors consented
-              to public display are included.
-            </p>
-            <Link to="/guidelines" className="link-teal mt-6 inline-block text-sm">
-              Read the submission guidelines →
-            </Link>
-          </div>
+          <Reveal className="grid items-center gap-12 border-t border-muted-300 py-20 lg:grid-cols-[11rem_1fr_1fr] lg:gap-x-12">
+            <p className="text-[13px] font-medium text-muted-500">Status</p>
+            <div>
+              <h2 className="text-4xl md:text-5xl">The gallery opens with the results.</h2>
+              <p className="mt-5 max-w-md text-lg leading-relaxed text-muted-600">
+                Approved posters and abstracts appear here after judging. Only work whose authors consented to public
+                display is shown.
+              </p>
+              <Link to="/guidelines" className="link-teal mt-8 inline-block">
+                Read the submission guidelines
+              </Link>
+            </div>
+            <div className="hidden h-40 rounded-md bg-ink p-8 lg:block">
+              <BridgeArch animate={false} traveller={false} stroke="faint" />
+            </div>
+          </Reveal>
         ) : (
           <>
-            <div className="mb-8 flex flex-wrap gap-2">
-              <FilterChip active={category === 'all'} onClick={() => setCategory('all')}>
-                All fields <span className="opacity-60">({projects.length})</span>
-              </FilterChip>
-              {RESEARCH_CATEGORIES.filter((c) => counts.has(c)).map((c) => (
-                <FilterChip key={c} active={category === c} onClick={() => setCategory(c)}>
-                  {c} <span className="opacity-60">({counts.get(c)})</span>
-                </FilterChip>
-              ))}
+            {/* Field tabs */}
+            <div className="sticky top-16 z-10 -mx-5 overflow-x-auto border-b border-muted-300 bg-muted-50/90 px-5 backdrop-blur-xl sm:-mx-8 sm:px-8">
+              <div className="flex gap-6">
+                {tabs.map((t) => (
+                  <button
+                    key={t.key}
+                    onClick={() => setCategory(t.key)}
+                    className={`relative shrink-0 py-4 text-[14px] font-medium transition-colors ${
+                      category === t.key ? 'text-navy-950' : 'text-muted-500 hover:text-navy-950'
+                    }`}
+                  >
+                    {t.label} <span className="tabular-nums text-muted-400">{t.count}</span>
+                    {category === t.key && (
+                      <motion.span layoutId="gallery-tab" className="absolute inset-x-0 -bottom-px h-[2px] bg-teal-500" />
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((p) => {
-                const award = awardLabel(p.award);
-                return (
-                  <Link
-                    key={p.id}
-                    to={`/gallery/${p.id}`}
-                    className="group flex flex-col rounded-xl border border-muted-200 bg-surface p-6 transition-shadow hover:shadow-card-hover"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-medium text-teal-600">{p.category}</span>
-                      {award && (
-                        <span className="inline-flex shrink-0 items-center gap-1 rounded bg-gold-50 px-2 py-0.5 text-xs font-semibold text-gold-700">
-                          <Award className="h-3 w-3" /> {award.place}
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="mt-3 text-lg leading-snug text-navy-950 group-hover:text-navy-700">{p.project_title}</h3>
-                    <p className="mt-2 text-sm text-muted-500">
-                      {p.author}
-                      {p.collaborators && `, ${p.collaborators}`}
-                    </p>
-                    <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted-600">{p.abstract}</p>
-                    <span className="mt-auto pt-4 text-sm font-medium text-teal-600">View project →</span>
-                  </Link>
-                );
-              })}
-            </div>
+            {/* Index of projects */}
+            <motion.ol layout className="divide-y divide-muted-300">
+              <AnimatePresence initial={false} mode="popLayout">
+                {filtered.map((p, i) => {
+                  const award = awardLabel(p.award);
+                  return (
+                    <motion.li
+                      key={p.id}
+                      layout
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE, delay: Math.min(i, 8) * 0.03 } }}
+                      exit={{ opacity: 0, transition: { duration: 0.15 } }}
+                    >
+                      <Link
+                        to={`/gallery/${p.id}`}
+                        className="group grid gap-3 py-8 md:grid-cols-[11rem_1fr_14rem] md:gap-12"
+                      >
+                        <div className="flex items-center gap-2 text-[13px] font-medium text-teal-600 md:block">
+                          {CATEGORY_SHORT[p.category as CompetitionCategory] ?? p.category}
+                          {award && (
+                            <span className="inline-flex items-center gap-2 text-navy-800 md:mt-3 md:flex">
+                              <span className={`h-2.5 w-2.5 rotate-45 ${AWARD_MARK[p.award ?? ''] ?? ''}`} />
+                              {award.place}
+                            </span>
+                          )}
+                        </div>
+                        <div>
+                          <h2 className="text-2xl leading-snug transition-colors group-hover:text-teal-700 md:text-[2rem]">
+                            {p.project_title}
+                          </h2>
+                          <p className="mt-3 line-clamp-2 max-w-2xl leading-relaxed text-muted-600">{p.abstract}</p>
+                        </div>
+                        <div className="flex items-start justify-between gap-4 text-[15px] md:flex-col md:items-end md:text-right">
+                          <div>
+                            <p className="font-medium text-navy-950">{p.author}</p>
+                            {p.collaborators && <p className="text-muted-500">{p.collaborators}</p>}
+                            {p.country && <p className="text-muted-500">{p.country}</p>}
+                          </div>
+                          <ArrowUpRight className="h-5 w-5 text-muted-400 transition-[transform,color] duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-teal-600" />
+                        </div>
+                      </Link>
+                    </motion.li>
+                  );
+                })}
+              </AnimatePresence>
+            </motion.ol>
           </>
         )}
       </div>
     </>
-  );
-}
-
-function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
-        active ? 'border-brand-900 bg-brand-900 text-white' : 'border-muted-300 bg-surface text-navy-800 hover:border-navy-400'
-      }`}
-    >
-      {children}
-    </button>
   );
 }
 
@@ -132,7 +168,7 @@ export function GalleryProjectPage() {
 
   if (project === undefined) {
     return (
-      <div className="flex justify-center py-32">
+      <div className="flex justify-center py-40">
         <Spinner />
       </div>
     );
@@ -140,10 +176,12 @@ export function GalleryProjectPage() {
 
   if (project === null) {
     return (
-      <div className="mx-auto max-w-xl px-4 py-24 text-center">
-        <h1 className="text-2xl text-navy-950">Project not found</h1>
-        <p className="mt-3 text-muted-600">It may not be published yet, or it was removed at the author’s request.</p>
-        <Link to="/gallery" className="link-teal mt-6 inline-block">
+      <div className="mx-auto max-w-7xl px-5 py-28 sm:px-8">
+        <h1 className="text-5xl">Project not found</h1>
+        <p className="mt-4 max-w-md text-lg text-muted-600">
+          It may not be published yet, or it was removed at the author’s request.
+        </p>
+        <Link to="/gallery" className="link-teal mt-8 inline-block">
           Back to the gallery
         </Link>
       </div>
@@ -153,73 +191,78 @@ export function GalleryProjectPage() {
   const award = awardLabel(project.award);
 
   return (
-    <article className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
-      <Link to="/gallery" className="inline-flex items-center gap-1.5 text-sm text-muted-500 hover:text-navy-900">
-        <ArrowLeft className="h-4 w-4" /> Research gallery
+    <article className="mx-auto max-w-7xl px-5 pb-28 pt-10 sm:px-8">
+      <Link to="/gallery" className="group inline-flex items-center gap-2 text-sm text-muted-500 hover:text-navy-950">
+        <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" /> Research gallery
       </Link>
 
-      <header className="mt-6 border-b border-muted-200 pb-8">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="text-sm font-medium text-teal-600">{project.category}</span>
+      <header className="mt-10 grid gap-x-12 gap-y-6 border-b border-muted-300 pb-12 lg:grid-cols-[11rem_1fr]">
+        <div className="text-[13px] font-medium lg:pt-4">
+          <p className="text-teal-600">{project.category}</p>
           {award && (
-            <span className="inline-flex items-center gap-1 rounded bg-gold-50 px-2.5 py-1 text-xs font-semibold text-gold-700">
-              <Award className="h-3.5 w-3.5" /> {award.place} — {award.title}
-            </span>
+            <p className="mt-3 inline-flex items-center gap-2 text-navy-800">
+              <span className={`h-2.5 w-2.5 rotate-45 ${AWARD_MARK[project.award ?? ''] ?? ''}`} />
+              {award.place}, {award.title}
+            </p>
           )}
         </div>
-        <h1 className="mt-4 text-3xl leading-tight text-navy-950 md:text-4xl">{project.project_title}</h1>
-        <p className="mt-4 text-muted-600">
-          {project.author}
-          {project.collaborators && `, ${project.collaborators}`}
-          {project.country && <span className="text-muted-400"> · {project.country}</span>}
-        </p>
-        <p className="mt-1 font-mono text-xs text-muted-400">{project.submission_code}</p>
+        <div>
+          <motion.h1
+            className="max-w-4xl text-4xl leading-[1.05] md:text-6xl"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: EASE }}
+          >
+            {project.project_title}
+          </motion.h1>
+          <p className="mt-6 text-lg text-navy-900">
+            {project.author}
+            {project.collaborators && `, ${project.collaborators}`}
+            {project.country && <span className="text-muted-500">, {project.country}</span>}
+          </p>
+          <p className="mt-1 text-[13px] text-muted-400">Submission {project.submission_code}</p>
+        </div>
       </header>
 
-      <section className="py-8">
-        <h2 className="mb-3 text-xl text-navy-950">Abstract</h2>
-        <p className="whitespace-pre-line leading-relaxed text-muted-700">{project.abstract}</p>
+      <section className="grid gap-x-12 gap-y-4 py-12 lg:grid-cols-[11rem_1fr]">
+        <h2 className="font-sans text-[13px] font-medium tracking-normal text-muted-500">Abstract</h2>
+        <p className="max-w-3xl whitespace-pre-line text-lg leading-relaxed text-navy-900">{project.abstract}</p>
       </section>
 
       {posterUrl && (
-        <section className="py-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-xl text-navy-950">Poster</h2>
-            <a href={posterUrl} target="_blank" rel="noreferrer" className="link-teal inline-flex items-center gap-1 text-sm">
+        <section className="grid gap-x-12 gap-y-4 border-t border-muted-300 py-12 lg:grid-cols-[11rem_1fr]">
+          <div className="flex items-start justify-between lg:block">
+            <h2 className="font-sans text-[13px] font-medium tracking-normal text-muted-500">Poster</h2>
+            <a href={posterUrl} target="_blank" rel="noreferrer" className="link-teal inline-flex items-center gap-1.5 text-sm lg:mt-3">
               <Download className="h-4 w-4" /> Open PDF
             </a>
           </div>
-          <div className="aspect-[16/9] overflow-hidden rounded-xl border border-muted-200 bg-surface">
+          <div className="aspect-[16/9] overflow-hidden rounded-md border border-muted-300 bg-surface shadow-card-hover">
             <iframe src={posterUrl} title="Poster" className="h-full w-full" />
           </div>
         </section>
       )}
 
-      {FEATURES.videos && project.video_url && (
-        <section className="py-4">
-          <h2 className="mb-3 text-xl text-navy-950">Video presentation</h2>
-          <a href={project.video_url} target="_blank" rel="noreferrer" className="link-teal inline-flex items-center gap-1">
-            Watch the presentation <ExternalLink className="h-4 w-4" />
-          </a>
+      {(paperUrl || (FEATURES.videos && project.video_url)) && (
+        <section className="grid gap-x-12 gap-y-4 border-t border-muted-300 py-12 lg:grid-cols-[11rem_1fr]">
+          <h2 className="font-sans text-[13px] font-medium tracking-normal text-muted-500">Materials</h2>
+          <div className="flex flex-wrap gap-3">
+            {paperUrl && (
+              <a href={paperUrl} target="_blank" rel="noreferrer" className="btn-secondary group">
+                <FileText className="h-4 w-4 text-teal-600" /> Read the full paper
+              </a>
+            )}
+            {FEATURES.videos && project.video_url && (
+              <a href={project.video_url} target="_blank" rel="noreferrer" className="btn-secondary group">
+                Watch the presentation <ExternalLink className="h-4 w-4" />
+              </a>
+            )}
+          </div>
         </section>
       )}
 
-      {paperUrl && (
-        <section className="py-4">
-          <h2 className="mb-3 text-xl text-navy-950">Research paper</h2>
-          <a
-            href={paperUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded border border-muted-300 bg-surface px-4 py-2.5 text-sm font-medium text-navy-900 hover:border-navy-400"
-          >
-            <FileText className="h-4 w-4 text-teal-600" /> Read the full paper
-          </a>
-        </section>
-      )}
-
-      <p className="mt-10 border-t border-muted-200 pt-6 text-xs leading-relaxed text-muted-500">
-        Published with the author’s consent. Appearing in the exhibition does not mean this research has been
+      <p className="mt-6 border-t border-muted-300 pt-6 text-[13px] leading-relaxed text-muted-500 lg:pl-[calc(11rem+3rem)]">
+        Published with the author’s consent. Appearing in the exhibition doesn’t mean this research has been
         scientifically validated or endorsed by the organizers.
       </p>
     </article>
