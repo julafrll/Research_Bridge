@@ -194,7 +194,7 @@ function StatTile({ label, value, active, onClick }: { label: string; value: num
         active ? 'border-brand-900 bg-brand-900 text-white' : 'border-muted-200 bg-surface hover:border-muted-300'
       }`}
     >
-      <p className={`font-serif text-2xl ${active ? 'text-white' : 'text-navy-950'}`}>{value}</p>
+      <p className={`font-serif font-medium text-2xl ${active ? 'text-white' : 'text-navy-950'}`}>{value}</p>
       <p className={`text-xs ${active ? 'text-blue-100' : 'text-muted-500'}`}>{label}</p>
     </button>
   );

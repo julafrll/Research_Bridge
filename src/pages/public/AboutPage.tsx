@@ -84,7 +84,7 @@ export function AboutPage() {
             <ol className="space-y-3">
               {SUBMISSION_RULES.map((r, i) => (
                 <li key={r} className="flex gap-4">
-                  <span className="w-6 shrink-0 font-serif text-teal-600">{i + 1}.</span>
+                  <span className="w-6 shrink-0 font-serif font-medium text-teal-600">{i + 1}.</span>
                   <span className="leading-relaxed text-muted-700">{r}</span>
                 </li>
               ))}
@@ -112,13 +112,13 @@ export function AboutPage() {
                         {r.criterion}
                         <span className="mt-0.5 block text-xs font-normal text-muted-500 sm:hidden">{r.evaluates}</span>
                       </td>
-                      <td className="px-4 py-3 text-right font-serif text-navy-900">{r.points}</td>
+                      <td className="px-4 py-3 text-right font-serif font-medium text-navy-900">{r.points}</td>
                       <td className="hidden px-4 py-3 text-muted-600 sm:table-cell">{r.evaluates}</td>
                     </tr>
                   ))}
                   <tr className="bg-muted-50">
                     <td className="px-4 py-3 font-semibold text-navy-950">Total</td>
-                    <td className="px-4 py-3 text-right font-serif text-teal-700">{RUBRIC_TOTAL}</td>
+                    <td className="px-4 py-3 text-right font-serif font-medium text-teal-700">{RUBRIC_TOTAL}</td>
                     <td className="hidden sm:table-cell" />
                   </tr>
                 </tbody>

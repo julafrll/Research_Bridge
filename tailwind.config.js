@@ -161,7 +161,7 @@ export default {
       colors: themeColors,
       fontFamily: {
         sans: ['Geist', 'system-ui', '-apple-system', 'sans-serif'],
-        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+        serif: ['Newsreader', 'Georgia', 'serif'],
       },
       boxShadow: {
         card: '0 1px 3px 0 rgb(31 63 115 / 0.06), 0 1px 2px 0 rgb(31 63 115 / 0.03)',

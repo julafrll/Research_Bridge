@@ -192,7 +192,7 @@ export function LandingPage() {
           <h1 className="sr-only">From curiosity to discovery</h1>
           <div
             aria-hidden
-            className="mt-12 flex flex-col font-serif text-[3.9rem] leading-[0.95] text-white sm:text-[5.5rem] lg:mt-20 lg:flex-row lg:items-end lg:gap-6 lg:text-[clamp(4rem,6.6vw,6.5rem)]"
+            className="mt-12 flex flex-col font-serif font-medium text-[3.9rem] leading-[0.95] text-white sm:text-[5.5rem] lg:mt-20 lg:flex-row lg:items-end lg:gap-6 lg:text-[clamp(4rem,6.6vw,6.5rem)]"
           >
             <motion.span
               initial={{ opacity: 0, y: 24 }}
@@ -235,14 +235,14 @@ export function LandingPage() {
             <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
               <Link
                 to={entryLink}
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 font-semibold text-brand-950 transition-colors hover:bg-[#d6f1ed]"
+                className="group inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white px-7 py-3.5 font-semibold text-brand-950 transition-colors hover:bg-[#d6f1ed]"
               >
                 {user ? 'Open my entry' : 'Register and submit'}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/guidelines"
-                className="inline-flex items-center justify-center rounded-full border border-white/30 px-7 py-3.5 font-semibold text-white transition-colors hover:border-white/70"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-white/30 px-7 py-3.5 font-semibold text-white transition-colors hover:border-white/70"
               >
                 Read the guidelines
               </Link>
@@ -264,7 +264,7 @@ export function LandingPage() {
             <div className="absolute left-0 right-0 top-[19px] hidden h-px bg-muted-300 md:block" />
             {STAGES.map((stage) => (
               <li key={stage.number} className="relative">
-                <div className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border border-muted-300 bg-muted-50 font-serif text-xl text-navy-950">
+                <div className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border border-muted-300 bg-muted-50 font-serif font-medium text-xl text-navy-950">
                   {stage.number}
                 </div>
                 <p className="mt-6 text-sm font-medium text-teal-600">{stage.when}</p>
@@ -342,7 +342,7 @@ export function LandingPage() {
                   <div className="absolute inset-0 origin-left scale-x-0 bg-navy-50 transition-transform duration-500 ease-out group-hover:scale-x-100 motion-reduce:transition-none" />
                   <div className="relative flex items-center gap-5 px-2 py-5">
                     <Icon className="h-5 w-5 shrink-0 text-teal-600" strokeWidth={1.75} />
-                    <span className="font-serif text-2xl leading-tight text-navy-950">{c}</span>
+                    <span className="font-serif font-medium text-2xl leading-tight text-navy-950">{c}</span>
                   </div>
                 </li>
               );
@@ -368,7 +368,7 @@ export function LandingPage() {
               { n: '20', t: 'point gap brings in a third judge', d: 'When two scores disagree by that much, another judge reviews the project.' },
             ].map((x) => (
               <div key={x.t} className="border-t-2 border-navy-950 pt-5">
-                <p className="font-serif text-5xl text-navy-950">{x.n}</p>
+                <p className="font-serif font-medium text-5xl text-navy-950">{x.n}</p>
                 <p className="mt-1 font-medium text-navy-800">{x.t}</p>
                 <p className="mt-3 text-sm leading-relaxed text-muted-600">{x.d}</p>
               </div>
@@ -393,7 +393,7 @@ export function LandingPage() {
                 className={`${podiumHeight[a.key]} flex flex-col rounded-t-xl border-t-4 bg-navy-50 p-4 sm:p-7 ${podiumAccent[a.key]}`}
               >
                 <span className="text-sm font-medium text-muted-600">{a.place}</span>
-                <span className="mt-2 font-serif text-4xl text-navy-950 sm:text-6xl">{a.prize}</span>
+                <span className="mt-2 font-serif font-medium text-4xl text-navy-950 sm:text-6xl">{a.prize}</span>
                 <span className="mt-auto text-sm font-medium text-navy-800 sm:text-base">{a.title}</span>
               </motion.div>
             ))}
