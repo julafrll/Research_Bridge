@@ -165,6 +165,22 @@
     @apply bg-gradient-to-r from-current to-current bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-px font-medium text-teal-600 transition-[background-size,color] duration-300 ease-out hover:bg-[length:100%_1px] hover:text-teal-700;
   }
 
+  /* Soft light sweep across placeholder blocks. */
+  .skeleton-shimmer {
+    @apply relative overflow-hidden;
+  }
+  .skeleton-shimmer::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/60 to-transparent motion-reduce:hidden dark:via-white/10;
+    animation: shimmer 1.8s ease-in-out infinite;
+    animation-delay: inherit;
+  }
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
   .brand-rule {
     @apply h-px bg-navy-300;
   }
