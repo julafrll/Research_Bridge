@@ -5,10 +5,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { siteUrl } from '@/lib/site';
 import { Button, Input } from '@/components/ui';
-import { AuthError, AuthNotice, AuthShell } from '@/components/AuthShell';
+import { AuthError, AuthShell } from '@/components/AuthShell';
+import { EmailCodeForm } from '@/components/EmailCodeForm';
 
 export function RegisterPage() {
-  const { signUp } = useAuth();
+  const { signUp, verifyEmailCode } = useAuth();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -17,7 +18,6 @@ export function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
-  const [resent, setResent] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -51,39 +51,34 @@ export function RegisterPage() {
   };
 
   const resend = async () => {
-    setError(null);
     const { error: resendError } = await supabase.auth.resend({
       type: 'signup',
       email: email.trim(),
       options: { emailRedirectTo: siteUrl('competition') },
     });
-    if (resendError) setError(resendError.message);
-    else setResent(true);
+    return resendError?.message ?? null;
+  };
+
+  const verifyCode = async (code: string) => {
+    const { error: verifyError } = await verifyEmailCode(email.trim(), code);
+    if (verifyError) return verifyError;
+    navigate('/competition', { replace: true });
+    return null;
   };
 
   if (awaitingConfirmation) {
     return (
-      <AuthShell title="Confirm your email">
-        <div className="rounded-2xl border border-muted-200 bg-surface p-6 text-center shadow-card">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-teal-50">
+      <AuthShell
+        title="Confirm your email"
+        subtitle={<>We sent a 6-digit code to <strong>{email}</strong>. Enter it below to activate your account.</>}
+      >
+        <div className="mb-6 flex justify-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-teal-50">
             <MailCheck className="h-7 w-7 text-teal-600" />
           </div>
-          <p className="mt-4 text-navy-900">
-            We sent a confirmation link to <strong>{email}</strong>.
-          </p>
-          <p className="mt-2 text-sm text-muted-500">
-            Open it to activate your account — it brings you straight to your competition entry. Check your spam folder
-            if it doesn&apos;t arrive within a few minutes.
-          </p>
         </div>
-        <div className="mt-5">
-          {error && <AuthError>{error}</AuthError>}
-          {resent && <AuthNotice>A new confirmation link is on its way.</AuthNotice>}
-        </div>
-        <div className="flex flex-col items-center gap-3 text-sm">
-          <button type="button" onClick={resend} className="link-teal">
-            Resend confirmation email
-          </button>
+        <EmailCodeForm email={email} onVerify={verifyCode} onResend={resend} submitLabel="Confirm and continue" />
+        <div className="mt-6 flex flex-col items-center gap-3 text-sm">
           <Link to="/login" className="text-muted-500 hover:text-navy-900">
             Back to sign in
           </Link>
@@ -95,7 +90,7 @@ export function RegisterPage() {
   return (
     <AuthShell
       title="Create your account"
-      subtitle="Register for the Online Research Paper Competition. You'll confirm your email in the next step."
+      subtitle="Register for the Online Research Paper Competition. You'll confirm your email with a code in the next step."
     >
       {error && (
         <AuthError>

@@ -24,6 +24,10 @@ interface AuthContextValue {
     password: string,
     fullName: string
   ) => Promise<{ error: string | null; needsConfirmation?: boolean }>;
+  /** Email a one-time sign-in code to an existing account. */
+  sendLoginCode: (email: string) => Promise<{ error: string | null }>;
+  /** Check a code from any of our emails (sign-in or sign-up confirmation) and sign the user in. */
+  verifyEmailCode: (email: string, code: string) => Promise<{ error: string | null; role: UserRole | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -128,6 +132,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null, needsConfirmation: !data.session };
   }, []);
 
+  const sendLoginCode = useCallback(async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        // Sign-in only: new participants register first so we collect their name.
+        shouldCreateUser: false,
+        emailRedirectTo: siteUrl('competition'),
+      },
+    });
+    return { error: error?.message ?? null };
+  }, []);
+
+  const verifyEmailCode = useCallback(async (email: string, code: string) => {
+    // type 'email' covers both the sign-in code and the sign-up confirmation code.
+    const { data, error } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' });
+    if (error) return { error: error.message, role: null };
+    if (!data.session) return { error: 'We could not sign you in. Please request a new code.', role: null };
+    return { error: null, role: (data.session.user.app_metadata?.role as UserRole) ?? null };
+  }, []);
+
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setProfile(null);
@@ -148,6 +172,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAdmin,
     signIn,
     signUp,
+    sendLoginCode,
+    verifyEmailCode,
     signOut,
     refreshProfile,
   };

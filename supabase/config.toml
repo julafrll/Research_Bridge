@@ -1,2 +1,16 @@
 [functions.drive-proxy]
 verify_jwt = false
+
+# Email templates for the 6-digit code sign-in and sign-up confirmation.
+# These apply to the local Supabase CLI stack only. On the hosted project,
+# paste the same HTML into Authentication → Emails (see docs/email-code-sign-in.md).
+[auth.email]
+otp_length = 6
+
+[auth.email.template.magic_link]
+subject = "Your Research Bridge sign-in code"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.confirmation]
+subject = "Confirm your Research Bridge account"
+content_path = "./supabase/templates/confirmation.html"
