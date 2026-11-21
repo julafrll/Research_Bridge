@@ -1,14 +1,13 @@
 import { useRef, useState, type PointerEvent, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion';
-import { Atom, ChevronDown, Cpu, Dna, FileText, FlaskConical, Globe2, Presentation, Sigma, type LucideIcon } from 'lucide-react';
+import { ChevronDown, FileText, Presentation, type LucideIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { AtomOrbits } from '@/components/Atom';
-import { Chapter, EASE, Podium, Reveal, RubricFigure, ScheduleFigure } from '@/components/editorial';
+import { FieldChips } from '@/components/blocks';
+import { Chapter, EASE, Podium, Reveal, RiseHeading, RubricFigure, ScheduleFigure } from '@/components/editorial';
 import { FEATURES } from '@/config/features';
-import { COMPETITION, PAPER_STRUCTURE, POSTER_CONTENTS, RESEARCH_CATEGORIES } from '@/config/competition';
-
-const CATEGORY_ICONS: LucideIcon[] = [Dna, FlaskConical, Atom, Cpu, Sigma, Globe2];
+import { COMPETITION, PAPER_STRUCTURE, POSTER_CONTENTS } from '@/config/competition';
 
 const MATERIALS: { icon: LucideIcon; title: string; format: string; points: string[]; more: { label: string; items: readonly string[] } }[] = [
   {
@@ -101,31 +100,6 @@ const JUDGING_RULES = [
   'Ties go to the stronger methodology, then rigor, then originality.',
 ];
 
-const HEADLINE = 'Research competition for school students, judged by professionals';
-
-/** Headline that rises in word by word on first load. */
-function HeroHeadline({ className }: { className: string }) {
-  const reduce = useReducedMotion();
-  if (reduce) return <h1 className={className}>{HEADLINE}</h1>;
-  return (
-    <h1 className={className} aria-label={HEADLINE}>
-      {HEADLINE.split(' ').map((word, i) => (
-        <span key={i} aria-hidden className="inline-block overflow-hidden pb-[0.08em] align-bottom">
-          <motion.span
-            className="inline-block"
-            initial={{ y: '110%' }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.8, ease: EASE, delay: 0.1 + i * 0.06 }}
-          >
-            {word}
-          </motion.span>
-          {i < HEADLINE.split(' ').length - 1 && '\u00a0'}
-        </span>
-      ))}
-    </h1>
-  );
-}
-
 /** Fades and lifts hero content in after the headline. */
 function HeroFade({ children, delay, className }: { children: ReactNode; delay: number; className?: string }) {
   const reduce = useReducedMotion();
@@ -202,9 +176,15 @@ export function LandingPage() {
 
           </HeroFade>
 
-          <HeroHeadline className="mt-8 max-w-2xl text-[2.6rem] text-white sm:text-6xl lg:text-[4rem] lg:leading-[1.06]" />
-          <HeroFade delay={0.65}>
-          <p className="mt-7 max-w-xl text-lg leading-relaxed text-blue-100 md:text-xl md:leading-relaxed">
+          <RiseHeading
+            text="From curiosity to discovery"
+            className="mt-8 max-w-2xl text-5xl text-white sm:text-6xl lg:text-[4.75rem] lg:leading-[1.04]"
+          />
+          <HeroFade delay={0.5}>
+          <p className="mt-6 max-w-xl text-xl font-medium text-white md:text-2xl">
+            International research paper competition for school students, judged by professionals.
+          </p>
+          <p className="mt-4 max-w-xl text-lg leading-relaxed text-blue-100">
             Submit an original research paper and a scientific poster from anywhere in the world. Every entry is
             scored by at least two judges, the top three win prizes, and approved projects are published in our online
             gallery.
@@ -277,21 +257,7 @@ export function LandingPage() {
         title="Six research fields"
         intro="Pick the field closest to your work. Theoretical, computational and literature-review projects all qualify."
       >
-        <ul className="flex flex-wrap gap-3">
-          {RESEARCH_CATEGORIES.map((c, i) => {
-            const Icon = CATEGORY_ICONS[i] ?? Atom;
-            return (
-              <Reveal as="li" key={c} delay={0.05 * i}>
-                <span className="group inline-flex cursor-default items-center gap-3 rounded-full border border-muted-300 bg-surface py-2.5 pl-2.5 pr-5 text-[15px] font-medium text-navy-950 transition-[background-color,border-color,color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-ink hover:bg-ink hover:text-white hover:shadow-card-hover">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy-100 text-navy-950 transition-[background-color,color,transform] duration-500 group-hover:rotate-[360deg] group-hover:bg-white/15 group-hover:text-white">
-                  <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
-                </span>
-                {c}
-                </span>
-              </Reveal>
-            );
-          })}
-        </ul>
+        <FieldChips />
       </Chapter>
 
       {/* Judging ------------------------------------------------------------ */}

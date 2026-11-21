@@ -6,6 +6,7 @@ import { PageMasthead } from '@/layouts/PublicLayout';
 import { Spinner } from '@/components/ui';
 import { EASE, Reveal } from '@/components/editorial';
 import { AtomMark } from '@/components/Atom';
+import { FieldChips } from '@/components/blocks';
 import { FEATURES } from '@/config/features';
 import { RESEARCH_CATEGORIES, CATEGORY_SHORT, type CompetitionCategory } from '@/config/competition';
 import { awardLabel, fetchGallery, signedFileUrl } from '@/lib/competition';
@@ -59,19 +60,40 @@ export function GalleryPage() {
             <Spinner />
           </div>
         ) : projects.length === 0 ? (
-          <Reveal className="grid items-center gap-12 py-20 lg:grid-cols-[1fr_auto] lg:gap-x-16">
-            <div>
-              <h2 className="text-3xl md:text-[2.6rem]">The gallery opens with the results</h2>
-              <p className="mt-5 max-w-md text-lg leading-relaxed text-muted-600">
-                Approved posters and abstracts appear here after judging. Only work whose authors consented to public
-                display is shown.
-              </p>
-              <Link to="/guidelines" className="link-teal mt-8 inline-block">
-                Read the submission guidelines
-              </Link>
+          <div className="py-14 md:py-20">
+            {/* A preview of how the gallery will look, with an explanation on top */}
+            <div className="relative overflow-hidden rounded-3xl border border-muted-200 bg-muted-50 p-4 sm:p-6">
+              <div className="grid grid-cols-2 gap-4 opacity-70 md:grid-cols-3" aria-hidden>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="overflow-hidden rounded-xl bg-surface p-3">
+                    <div className="skeleton-shimmer aspect-[16/10] rounded-lg bg-navy-100" style={{ animationDelay: `${i * 0.15}s` }} />
+                    <div className="skeleton-shimmer mt-3 h-3 w-4/5 rounded-full bg-muted-200" style={{ animationDelay: `${i * 0.15}s` }} />
+                    <div className="skeleton-shimmer mt-2 h-3 w-1/2 rounded-full bg-muted-200" style={{ animationDelay: `${i * 0.15}s` }} />
+                  </div>
+                ))}
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-muted-50 via-muted-50/80 to-muted-50/30 p-6">
+                <Reveal className="max-w-lg rounded-2xl bg-surface p-7 text-center shadow-elevated md:p-9">
+                  <AtomMark className="mx-auto h-14 w-14" />
+                  <h2 className="mt-5 text-2xl md:text-3xl">The gallery opens with the results</h2>
+                  <p className="mt-3 leading-relaxed text-muted-600">
+                    Approved posters and abstracts appear here after judging, sorted by research field. Only work whose
+                    authors agreed to public display is shown.
+                  </p>
+                  <Link to="/guidelines" className="btn-primary mt-6 px-6 py-3">
+                    Read the submission guidelines
+                  </Link>
+                </Reveal>
+              </div>
             </div>
-            <AtomMark className="hidden h-44 w-44 lg:block" />
-          </Reveal>
+            <div className="mt-14">
+              <h2 className="text-2xl md:text-3xl">Fields in the gallery</h2>
+              <p className="mt-3 max-w-2xl text-muted-600">Projects will be grouped into these six research fields.</p>
+              <div className="mt-6">
+                <FieldChips />
+              </div>
+            </div>
+          </div>
         ) : (
           <>
             {/* Field tabs */}

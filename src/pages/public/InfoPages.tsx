@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpRight, Plus } from 'lucide-react';
+import { FlaskConical, GraduationCap, Microscope, Plus, Presentation, Wrench } from 'lucide-react';
 import { PageMasthead } from '@/layouts/PublicLayout';
 import { Chapter, EASE, Podium, Reveal } from '@/components/editorial';
+import { EmailCard, IconCards, type IconItem } from '@/components/blocks';
 import { COMPETITION, FAQ, JUDGES } from '@/config/competition';
 import { fetchGallery } from '@/lib/competition';
 import { initials } from '@/lib/utils';
@@ -13,7 +14,13 @@ import type { GalleryProject } from '@/types/competition';
  * Judges
  * --------------------------------------------------------------------------*/
 
-const JUDGE_BACKGROUNDS = ['Researchers', 'University students with relevant expertise', 'Teachers', 'Engineers', 'Scientists'];
+const JUDGE_BACKGROUNDS: IconItem[] = [
+  { icon: Microscope, title: 'Researchers', text: 'People who run research projects of their own.' },
+  { icon: GraduationCap, title: 'University students', text: 'Advanced students with expertise in the project’s field.' },
+  { icon: Presentation, title: 'Teachers', text: 'Educators who guide student research.' },
+  { icon: Wrench, title: 'Engineers', text: 'Practitioners who build and test things for a living.' },
+  { icon: FlaskConical, title: 'Scientists', text: 'Specialists across the six research fields.' },
+];
 
 export function JudgesPage() {
   return (
@@ -25,30 +32,22 @@ export function JudgesPage() {
       />
 
       {JUDGES.length === 0 ? (
-        <Chapter n="1" label="Panel" title="Being introduced soon">
-          <div className="grid gap-14 lg:grid-cols-[1fr_1fr]">
+        <Chapter n="1" label="Panel" title="Judges are being introduced soon">
+          <div className="grid gap-10 lg:grid-cols-[1fr_2fr]">
             <Reveal>
               <p className="max-w-md text-lg leading-relaxed text-muted-600">
                 We’re recruiting judges now. Only judges who agree to be identified publicly will be listed here, and
                 their contact details stay private.
               </p>
-              <p className="mt-8 text-[15px] text-muted-600">
-                Have relevant expertise and want to help?{' '}
-                <Link to="/contact" className="link-teal">
+              <div className="mt-8 rounded-2xl bg-ink p-6 text-white">
+                <p className="text-lg font-semibold">Want to judge?</p>
+                <p className="mt-2 text-blue-100">If you have relevant expertise, we’d love your help reviewing projects.</p>
+                <Link to="/contact" className="btn-light mt-5 px-5 py-2.5 text-sm">
                   Get in touch
                 </Link>
-              </p>
+              </div>
             </Reveal>
-            <div>
-              <p className="mb-4 text-[13px] font-medium text-muted-500">Judges come from</p>
-              <ul className="border-t border-muted-300">
-                {JUDGE_BACKGROUNDS.map((b, i) => (
-                  <Reveal as="li" key={b} delay={i * 0.05} className="border-b border-muted-300 py-4">
-                    <span className="display text-2xl text-navy-950">{b}</span>
-                  </Reveal>
-                ))}
-              </ul>
-            </div>
+            <IconCards columns={2} items={JUDGE_BACKGROUNDS} />
           </div>
         </Chapter>
       ) : (
@@ -136,20 +135,13 @@ export function ContactPage() {
         intro="About eligibility, submissions or published materials. We aim to reply within two business days."
       />
 
-      <Chapter n="1" label="Write to us" title="Write to us">
-        <div className="grid gap-14 lg:grid-cols-[1fr_1fr]">
+      <Chapter n="1" id="write" label="Write to us" title="Write to us">
+        <div className="grid items-start gap-6 lg:grid-cols-2">
           <Reveal>
-            <p className="text-muted-600">Email the organizing team:</p>
             {COMPETITION.contactEmail ? (
-              <a
-                href={`mailto:${COMPETITION.contactEmail}`}
-                className="group mt-2 inline-flex items-baseline gap-2 text-2xl font-semibold text-navy-950 hover:text-teal-700 sm:text-3xl"
-              >
-                {COMPETITION.contactEmail}
-                <ArrowUpRight className="h-5 w-5 shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
-              </a>
+              <EmailCard email={COMPETITION.contactEmail} />
             ) : (
-              <p className="display mt-3 text-3xl text-navy-950 md:text-5xl">Email address coming soon</p>
+              <p className="text-3xl font-semibold text-navy-950">Email address coming soon</p>
             )}
             {COMPETITION.instagramUrl && (
               <a href={COMPETITION.instagramUrl} target="_blank" rel="noreferrer" className="link-teal mt-6 inline-block">
@@ -157,15 +149,20 @@ export function ContactPage() {
               </a>
             )}
           </Reveal>
-          <Reveal delay={0.1} className="rounded-md border border-muted-300 bg-surface p-7">
+          <Reveal delay={0.1} className="rounded-2xl border border-muted-200 bg-surface p-7 md:p-9">
             <h2 className="text-3xl">Corrections and removal</h2>
             <p className="mt-3 leading-relaxed text-muted-600">
               To correct or remove anything published about you or your project, email us with:
             </p>
-            <ol className="mt-5 space-y-2 text-[15px] text-navy-900">
-              <li>1. Your submission ID, for example RB-0042</li>
-              <li>2. The page or material concerned</li>
-              <li>3. What should be corrected or removed</li>
+            <ol className="mt-5 space-y-3 text-[15px] text-navy-900">
+              {['Your submission ID, for example RB-0042', 'The page or material concerned', 'What should be corrected or removed'].map((t, i) => (
+                <li key={t} className="flex items-center gap-3">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy-100 text-sm font-semibold text-navy-950">
+                    {i + 1}
+                  </span>
+                  {t}
+                </li>
+              ))}
             </ol>
             <p className="mt-5 text-sm text-muted-500">
               Parents and guardians of participants under 18 can make this request too.
@@ -174,18 +171,23 @@ export function ContactPage() {
         </div>
       </Chapter>
 
-      <Chapter n="2" label="FAQ" tone="surface" title="Frequently asked">
-        <div className="border-t border-muted-300">
+      <Chapter n="2" id="faq" label="FAQ" tone="surface" title="Frequently asked questions">
+        <div className="max-w-4xl space-y-3">
           {FAQ.map((f, i) => {
             const isOpen = open === i;
             return (
-              <div key={f.q} className="border-b border-muted-300">
+              <div
+                key={f.q}
+                className={`rounded-2xl border px-6 transition-[border-color,background-color,box-shadow] duration-300 ${
+                  isOpen ? 'border-navy-200 bg-muted-50 shadow-card-hover' : 'border-muted-200 hover:border-navy-200'
+                }`}
+              >
                 <button
                   className="group flex w-full items-center justify-between gap-6 py-6 text-left"
                   onClick={() => setOpen(isOpen ? null : i)}
                   aria-expanded={isOpen}
                 >
-                  <span className="display text-2xl text-navy-950 transition-colors group-hover:text-teal-700 md:text-[1.75rem]">
+                  <span className="text-lg font-semibold text-navy-950 transition-colors group-hover:text-teal-700 md:text-xl">
                     {f.q}
                   </span>
                   <span
@@ -205,7 +207,7 @@ export function ContactPage() {
                       transition={{ duration: 0.35, ease: EASE }}
                       className="overflow-hidden"
                     >
-                      <p className="max-w-2xl pb-7 text-lg leading-relaxed text-muted-600">{f.a}</p>
+                      <p className="max-w-2xl pb-6 leading-relaxed text-muted-600">{f.a}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>

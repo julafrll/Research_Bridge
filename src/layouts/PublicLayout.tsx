@@ -1,12 +1,13 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowUpRight, Menu, X } from 'lucide-react';
 import { AnimatedOutlet } from '@/components/PageTransition';
 import { useAuth } from '@/contexts/AuthContext';
 import { BrandLogo } from '@/components/BrandLogo';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { EASE } from '@/components/editorial';
+import { EASE, RiseHeading } from '@/components/editorial';
+import { AtomOrbits } from '@/components/Atom';
 import { COMPETITION } from '@/config/competition';
 
 const NAV = [
@@ -265,18 +266,109 @@ function FooterLink({ to, children }: { to: string; children: ReactNode }) {
 }
 
 /* ----------------------------------------------------------------------------
- * Page masthead — title and intro at the top of inner pages. `eyebrow` is
- * accepted for old call sites but not shown; the nav already says where you are.
+ * Page masthead — the blue band at the top of inner pages, with the atom from
+ * the logo. Pass `sections` to add a sticky "on this page" bar below it.
+ * `eyebrow` is accepted for old call sites but not shown.
  * --------------------------------------------------------------------------*/
 
-export function PageMasthead({ title, intro }: { eyebrow?: string; title: string; intro?: string }) {
+export interface PageSection {
+  id: string;
+  label: string;
+}
+
+export function PageMasthead({
+  title,
+  intro,
+  sections,
+}: {
+  eyebrow?: string;
+  title: string;
+  intro?: string;
+  sections?: PageSection[];
+}) {
+  const reduce = useReducedMotion();
   return (
-    <section className="border-b border-muted-200 bg-surface">
-      <div className="mx-auto max-w-6xl px-5 pb-14 pt-12 sm:px-8 md:pb-20 md:pt-16">
-        <h1 className="max-w-4xl text-4xl sm:text-5xl lg:text-[3.6rem]">{title}</h1>
-        {intro && <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-600 md:text-xl">{intro}</p>}
+    <>
+      <section className="relative overflow-hidden bg-ink text-white">
+        <motion.div
+          className="pointer-events-none absolute -right-60 top-[calc(50%-15rem)] h-[30rem] w-[30rem] opacity-25 sm:-right-24 sm:opacity-70 lg:right-0 lg:top-[calc(50%-17rem)] lg:h-[34rem] lg:w-[34rem]"
+          animate={reduce ? undefined : { rotate: 360 }}
+          transition={{ duration: 140, ease: 'linear', repeat: Infinity }}
+        >
+          <AtomOrbits className="h-full w-full" />
+        </motion.div>
+        <div className="relative mx-auto max-w-6xl px-5 pb-16 pt-14 sm:px-8 md:pb-20 md:pt-20">
+          <RiseHeading text={title} className="max-w-3xl text-4xl text-white sm:text-5xl lg:text-[3.6rem]" />
+          {intro && (
+            <motion.p
+              className="mt-6 max-w-2xl text-lg leading-relaxed text-blue-100 md:text-xl"
+              initial={reduce ? false : { opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: EASE, delay: 0.45 }}
+            >
+              {intro}
+            </motion.p>
+          )}
+        </div>
+      </section>
+      {sections && sections.length > 0 && <SectionNav sections={sections} />}
+    </>
+  );
+}
+
+/** Sticky row of links to the page's sections; the one in view is highlighted. */
+function SectionNav({ sections }: { sections: PageSection[] }) {
+  const [active, setActive] = useState(sections[0]?.id);
+
+  useEffect(() => {
+    const els = sections.map((s) => document.getElementById(s.id)).filter((el): el is HTMLElement => Boolean(el));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) setActive(visible[0].target.id);
+      },
+      { rootMargin: '-35% 0px -60% 0px' }
+    );
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [sections]);
+
+  const go = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.replaceState(null, '', `#${id}`);
+  };
+
+  return (
+    <nav aria-label="On this page" className="sticky top-16 z-30 border-b border-muted-200 bg-surface/90 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-5 py-2.5 sm:px-8 [scrollbar-width:none]">
+        {sections.map((s) => {
+          const isActive = active === s.id;
+          return (
+            <a
+              key={s.id}
+              href={`#${s.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                go(s.id);
+              }}
+              aria-current={isActive ? 'location' : undefined}
+              className={`relative shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-200 ${
+                isActive ? 'text-white' : 'text-muted-600 hover:text-navy-950'
+              }`}
+            >
+              {isActive && (
+                <motion.span
+                  layoutId="section-nav-pill"
+                  className="absolute inset-0 rounded-full bg-ink"
+                  transition={{ type: 'spring', stiffness: 420, damping: 36 }}
+                />
+              )}
+              <span className="relative">{s.label}</span>
+            </a>
+          );
+        })}
       </div>
-    </section>
+    </nav>
   );
 }
 

@@ -107,7 +107,7 @@ export function Chapter({
   id?: string;
 }) {
   return (
-    <section id={id} className={`scroll-mt-24 ${tone === 'surface' ? 'bg-surface' : ''}`}>
+    <section id={id} className={`scroll-mt-32 ${tone === 'surface' ? 'bg-surface' : ''}`}>
       <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
         {(title || intro) && (
           <Reveal className="mb-10 max-w-3xl md:mb-14">
@@ -447,5 +447,32 @@ export function RuledList({ items, numbered = false }: { items: readonly ReactNo
         </Reveal>
       ))}
     </ol>
+  );
+}
+
+/* ----------------------------------------------------------------------------
+ * RiseHeading — a page title that rises in word by word on first load.
+ * --------------------------------------------------------------------------*/
+
+export function RiseHeading({ text, className, delay = 0.1 }: { text: string; className?: string; delay?: number }) {
+  const reduce = useReducedMotion();
+  if (reduce) return <h1 className={className}>{text}</h1>;
+  const words = text.split(' ');
+  return (
+    <h1 className={className} aria-label={text}>
+      {words.map((word, i) => (
+        <span key={i} aria-hidden className="inline-block overflow-hidden pb-[0.1em] align-bottom">
+          <motion.span
+            className="inline-block"
+            initial={{ y: '110%' }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.8, ease: EASE, delay: delay + i * 0.07 }}
+          >
+            {word}
+          </motion.span>
+          {i < words.length - 1 && ' '}
+        </span>
+      ))}
+    </h1>
   );
 }
