@@ -159,7 +159,7 @@ export function LandingPage() {
           </motion.div>
         </motion.div>
         <AtomOrbits className="pointer-events-none absolute -right-44 -top-36 h-80 w-80 opacity-40 md:hidden" animate={false} />
-        <div className="relative mx-auto max-w-6xl px-5 pb-20 pt-16 sm:px-8 md:pb-28 md:pt-24">
+        <div className="relative mx-auto max-w-6xl px-5 pb-14 pt-10 sm:px-8 sm:pb-20 sm:pt-16 md:pb-28 md:pt-24">
           <HeroFade delay={0}>
           <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-sm text-blue-100">
             <span className="relative flex h-2 w-2" aria-hidden>
@@ -170,28 +170,30 @@ export function LandingPage() {
                 className={`relative h-2 w-2 rounded-full ${COMPETITION.submissionsOpen ? 'bg-[#9fe3b5]' : 'bg-blue-300'}`}
               />
             </span>
-            {COMPETITION.submissionsOpen ? 'Submissions are open' : 'Submissions are closed'} for the{' '}
-            {COMPETITION.edition.replace(' Edition', '')} edition
+            {COMPETITION.submissionsOpen ? 'Submissions are open' : 'Submissions are closed'}
+            <span className="hidden sm:inline">
+              {' '}for the {COMPETITION.edition.replace(' Edition', '')} edition
+            </span>
           </p>
 
           </HeroFade>
 
           <RiseHeading
             text="From curiosity to discovery"
-            className="mt-8 max-w-2xl text-5xl text-white sm:text-6xl lg:text-[4.75rem] lg:leading-[1.04]"
+            className="mt-8 max-w-2xl text-[2.6rem] text-white min-[380px]:text-5xl sm:text-6xl lg:text-[4.75rem] lg:leading-[1.04]"
           />
           <HeroFade delay={0.5}>
           <p className="mt-6 max-w-xl text-xl font-medium text-white md:text-2xl">
             International research paper competition for school students, judged by professionals.
           </p>
-          <p className="mt-4 max-w-xl text-lg leading-relaxed text-blue-100">
+          <p className="mt-4 hidden max-w-xl text-lg leading-relaxed text-blue-100 sm:block">
             Submit an original research paper and a scientific poster from anywhere in the world. Every entry is
             scored by at least two judges, the top three win prizes, and approved projects are published in our online
             gallery.
           </p>
           </HeroFade>
 
-          <HeroFade delay={0.8} className="mt-10 flex flex-col gap-3 sm:flex-row">
+          <HeroFade delay={0.8} className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row">
             <Link to={entryLink} className="btn-light group">
               {entryLabel}
             </Link>
@@ -201,7 +203,7 @@ export function LandingPage() {
           </HeroFade>
 
           <HeroFade delay={0.95}>
-          <dl className="mt-14 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-5 border-t border-white/15 pt-8 text-sm sm:grid-cols-3">
+          <dl className="mt-10 grid max-w-2xl sm:mt-14 grid-cols-2 gap-x-8 gap-y-5 border-t border-white/15 pt-8 text-sm sm:grid-cols-3">
             <div>
               <dt className="text-blue-200">Who can enter</dt>
               <dd className="mt-1 font-medium text-white">Students in any country, alone or as a team</dd>

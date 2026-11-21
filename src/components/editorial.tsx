@@ -108,11 +108,11 @@ export function Chapter({
 }) {
   return (
     <section id={id} className={`scroll-mt-32 ${tone === 'surface' ? 'bg-surface' : ''}`}>
-      <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16 md:py-24">
         {(title || intro) && (
-          <Reveal className="mb-10 max-w-3xl md:mb-14">
-            <h2 className="text-3xl md:text-[2.6rem]">{title ?? label}</h2>
-            {intro && <div className="mt-5 max-w-2xl text-lg leading-relaxed text-muted-600">{intro}</div>}
+          <Reveal className="mb-8 max-w-3xl sm:mb-10 md:mb-14">
+            <h2 className="text-[1.85rem] sm:text-3xl md:text-[2.6rem]">{title ?? label}</h2>
+            {intro && <div className="mt-4 max-w-2xl text-base leading-relaxed text-muted-600 sm:mt-5 sm:text-lg">{intro}</div>}
           </Reveal>
         )}
         <Reveal delay={0.08}>{children}</Reveal>
@@ -221,20 +221,27 @@ export function ScheduleFigure() {
       </div>
 
       {/* Descriptions (all sizes); tap one on mobile to highlight it */}
-      <ol className="grid gap-4 md:grid-cols-2 lg:mt-8 lg:grid-cols-4">
+      <ol className="relative grid gap-1 before:absolute before:bottom-6 before:left-[0.9rem] before:top-6 before:w-0.5 before:rounded-full before:bg-muted-300 md:grid-cols-2 md:gap-4 md:before:hidden lg:mt-8 lg:grid-cols-4">
         {STAGES.map((s, i) => (
           <Reveal as="li" key={s.number} delay={0.06 * i}>
             <button
               type="button"
               {...bind(i)}
-              className={`h-full w-full rounded-xl border p-5 text-left transition-[border-color,background-color,opacity,transform] duration-300 ${
+              className={`relative h-full w-full rounded-xl border py-4 pl-10 pr-4 text-left transition-[border-color,background-color,opacity,transform] duration-300 md:p-5 ${
                 active === i
                   ? '-translate-y-1 border-navy-300 bg-surface shadow-card-hover'
                   : 'border-transparent bg-transparent hover:bg-surface'
               } ${dim(i) ? 'opacity-50' : 'opacity-100'}`}
             >
+              {/* dot on the phone timeline rail */}
+              <span
+                className={`absolute left-[0.45rem] top-[1.15rem] h-[1.05rem] w-[1.05rem] rounded-full ring-4 ring-muted-50 md:hidden ${STAGE_COLORS[i]} ${
+                  i === 3 ? 'rotate-45 rounded-sm' : ''
+                }`}
+                aria-hidden
+              />
               <span className="flex items-center gap-2.5">
-                <span className={`h-2.5 w-2.5 rounded-full ${STAGE_COLORS[i]} ${i === 3 ? 'rotate-45 rounded-none' : ''}`} />
+                <span className={`hidden h-2.5 w-2.5 rounded-full md:inline-block ${STAGE_COLORS[i]} ${i === 3 ? 'rotate-45 rounded-none' : ''}`} />
                 <span className="text-[13px] font-medium text-muted-500">{s.when}</span>
               </span>
               <span className="mt-2 block text-lg font-semibold text-navy-950">{s.title}</span>
@@ -280,6 +287,7 @@ export function RubricFigure() {
             <>
               <span className="font-semibold text-navy-950">{current.criterion}</span> is{' '}
               {Math.round((current.points / total) * 100)}% of the score
+              <span className="block text-sm text-muted-500 sm:hidden">{current.evaluates}</span>
             </>
           ) : (
             'Hover over or tap a part of the bar to see what it covers.'
@@ -317,22 +325,22 @@ export function RubricFigure() {
           </motion.button>
         ))}
       </motion.div>
-      <ol className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <ol className="mt-5 grid grid-cols-2 gap-1.5 sm:mt-6 sm:gap-2 lg:grid-cols-3">
         {RUBRIC.map((r, i) => (
           <li key={r.criterion}>
             <button
               type="button"
               {...bind(i)}
-              className={`flex h-full w-full gap-3 rounded-lg p-3 text-left transition-[background-color,opacity] duration-300 ${
+              className={`flex h-full w-full gap-2.5 rounded-lg p-2.5 text-left transition-[background-color,opacity] duration-300 sm:gap-3 sm:p-3 ${
                 active === i ? 'bg-navy-100' : 'hover:bg-navy-50'
               } ${active !== null && active !== i ? 'opacity-50' : ''}`}
             >
               <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${RUBRIC_SHADES[i % RUBRIC_SHADES.length]}`} />
               <span>
-                <span className="block text-[15px] font-medium text-navy-950">
-                  {r.criterion} <span className="tabular-nums text-muted-500">({r.points} points)</span>
+                <span className="block text-sm font-medium leading-snug text-navy-950 sm:text-[15px]">
+                  {r.criterion} <span className="whitespace-nowrap tabular-nums text-muted-500">({r.points} points)</span>
                 </span>
-                <span className="mt-0.5 block text-sm text-muted-500">{r.evaluates}</span>
+                <span className="mt-0.5 hidden text-sm text-muted-500 sm:block">{r.evaluates}</span>
               </span>
             </button>
           </li>

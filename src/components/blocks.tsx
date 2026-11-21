@@ -19,26 +19,64 @@ export interface IconItem {
   title?: string;
 }
 
-/** Grid of cards, each with a round icon; cards lift and the icon turns on hover. */
+/**
+ * Cards with a round icon; they lift and the icon turns on hover. On phones
+ * the cards sit in a row you swipe through, with dots showing where you are,
+ * instead of a long stack.
+ */
 export function IconCards({ items, columns = 3 }: { items: IconItem[]; columns?: 2 | 3 }) {
+  const trackRef = useRef<HTMLUListElement>(null);
+  const [current, setCurrent] = useState(0);
+
+  const onScroll = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.firstElementChild as HTMLElement | null;
+    const step = card ? card.offsetWidth + 12 : el.clientWidth;
+    setCurrent(Math.min(items.length - 1, Math.round(el.scrollLeft / step)));
+  };
+
+  const goTo = (i: number) => {
+    const el = trackRef.current;
+    const first = el?.children[0] as HTMLElement | undefined;
+    const card = el?.children[i] as HTMLElement | undefined;
+    if (el && first && card) el.scrollTo({ left: card.offsetLeft - first.offsetLeft, behavior: 'smooth' });
+  };
+
   return (
-    <ul className={`grid gap-4 sm:grid-cols-2 ${columns === 3 ? 'lg:grid-cols-3' : ''}`}>
-      {items.map(({ icon: Icon, text, title }, i) => (
-        <Reveal as="li" key={i} delay={0.05 * i} className="h-full">
-          <div className="group flex h-full gap-4 rounded-xl border border-muted-200 bg-surface p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-navy-200 hover:shadow-card-hover sm:block sm:p-6">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-navy-100 text-navy-950 transition-[background-color,color,transform] duration-500 group-hover:-rotate-12 group-hover:scale-110 group-hover:bg-ink group-hover:text-white">
-              <Icon className="h-5 w-5" strokeWidth={1.8} />
-            </span>
-            <div>
-              {title && <p className="text-lg font-semibold text-navy-950 sm:mt-5">{title}</p>}
-              <p className={`${title ? 'mt-1.5 text-[15px] text-muted-600' : 'pt-2.5 text-[16px] text-navy-900 sm:mt-5 sm:pt-0'} leading-relaxed`}>
-                {text}
-              </p>
+    <div className="min-w-0">
+      <ul
+        ref={trackRef}
+        onScroll={onScroll}
+        className={`-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-5 px-5 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden ${
+          columns === 3 ? 'lg:grid-cols-3' : ''
+        }`}
+      >
+        {items.map(({ icon: Icon, text, title }, i) => (
+          <Reveal as="li" key={i} delay={0.05 * i} className="w-[82%] shrink-0 snap-start sm:w-auto">
+            <div className="group h-full rounded-xl border border-muted-200 bg-surface p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-navy-200 hover:shadow-card-hover sm:p-6">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-navy-100 text-navy-950 transition-[background-color,color,transform] duration-500 group-hover:-rotate-12 group-hover:scale-110 group-hover:bg-ink group-hover:text-white">
+                <Icon className="h-5 w-5" strokeWidth={1.8} />
+              </span>
+              {title && <p className="mt-4 text-lg font-semibold text-navy-950 sm:mt-5">{title}</p>}
+              <p className={`${title ? 'mt-1.5 text-[15px] text-muted-600' : 'mt-4 text-[16px] text-navy-900 sm:mt-5'} leading-relaxed`}>{text}</p>
             </div>
-          </div>
-        </Reveal>
-      ))}
-    </ul>
+          </Reveal>
+        ))}
+      </ul>
+      {/* Position dots, phones only */}
+      <div className="mt-4 flex justify-center gap-2 sm:hidden">
+        {items.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => goTo(i)}
+            aria-label={`Show card ${i + 1} of ${items.length}`}
+            className={`h-2 rounded-full transition-all duration-300 ${i === current ? 'w-6 bg-ink dark:bg-navy-500' : 'w-2 bg-muted-300'}`}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -224,12 +262,12 @@ export function EmailCard({ email }: { email: string }) {
     }
   };
   return (
-    <div className="min-w-0 rounded-2xl bg-ink p-7 text-white md:p-9">
+    <div className="min-w-0 rounded-2xl bg-ink p-6 text-white sm:p-7 md:p-9">
       <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
         <Mail className="h-5 w-5" />
       </span>
       <p className="mt-6 text-blue-100">Email the organizing team</p>
-      <a href={`mailto:${email}`} className="mt-1 block text-xl font-semibold [overflow-wrap:anywhere] hover:underline sm:text-2xl">
+      <a href={`mailto:${email}`} className="mt-1 block text-[1.05rem] font-semibold [overflow-wrap:anywhere] hover:underline min-[400px]:text-xl sm:text-2xl">
         {email}
       </a>
       <div className="mt-7 flex flex-wrap gap-3">
