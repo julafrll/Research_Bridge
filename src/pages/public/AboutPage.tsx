@@ -74,7 +74,7 @@ export function AboutPage() {
         <RubricFigure />
         <div className="mt-20 grid gap-12 lg:grid-cols-[1fr_1.5fr]">
           <Reveal>
-            <h3 className="display text-3xl font-medium tracking-[-0.02em] text-navy-950 md:text-4xl">Scoring procedure</h3>
+            <h3 className="text-2xl font-semibold tracking-[-0.02em] text-navy-950 md:text-3xl">Scoring procedure</h3>
             <p className="mt-4 max-w-sm leading-relaxed text-muted-600">
               The same steps for every project, so two entries are never judged differently.
             </p>

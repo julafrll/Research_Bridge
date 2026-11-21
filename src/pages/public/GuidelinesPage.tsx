@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { PageMasthead } from '@/layouts/PublicLayout';
 import { Chapter, Reveal, RuledList, ScheduleFigure } from '@/components/editorial';
@@ -38,7 +37,7 @@ function SpecSheet({
   return (
     <div className="grid gap-12 lg:grid-cols-[1fr_1.25fr]">
       <Reveal>
-        <h3 className="display text-4xl font-medium tracking-[-0.02em] text-navy-950 md:text-5xl">{title}</h3>
+        <h2 className="text-3xl md:text-[2.6rem]">{title}</h2>
         <p className="mt-5 max-w-md text-lg leading-relaxed text-muted-600">{lead}</p>
         <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-muted-200 bg-muted-200">
           {facts.map(([k, v]) => (
@@ -144,14 +143,14 @@ export function GuidelinesPage() {
         <RuledList items={SUBMISSION_RULES} numbered />
       </Chapter>
 
-      <section className="grain overflow-hidden bg-ink text-white">
-        <div className="relative mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 px-5 py-20 sm:px-8 md:flex-row md:items-end">
+      <section className="bg-[#d9d9d8] dark:bg-muted-100">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 px-5 py-16 sm:px-8 md:flex-row md:items-center md:py-20">
           <div>
-            <h2 className="text-4xl text-white md:text-6xl">Ready to submit?</h2>
-            <p className="mt-4 text-lg text-blue-100">Create an account, then complete your entry one section at a time.</p>
+            <h2 className="text-3xl md:text-4xl">Ready to submit?</h2>
+            <p className="mt-3 text-muted-700">Create an account, then complete your entry one section at a time.</p>
           </div>
-          <Link to={user ? '/competition' : '/register'} className="btn-light group">
-            {user ? 'Open my entry' : 'Register and submit'} <ArrowRight className="arrow" />
+          <Link to={user ? '/competition' : '/register'} className="btn-primary shrink-0 px-7 py-3.5 text-[15px]">
+            {user ? 'Open my entry' : 'Register and submit'}
           </Link>
         </div>
       </section>

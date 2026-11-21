@@ -1,4 +1,4 @@
-/* Fonts are self-hosted (see main.tsx): Newsreader for display, Geist for text. */
+/* Poppins, the logo's typeface, is self-hosted (see main.tsx). */
 
 @tailwind base;
 @tailwind components;
@@ -23,20 +23,15 @@
 
   body {
     @apply bg-muted-50 font-sans text-navy-900 antialiased;
-    font-feature-settings: 'ss01', 'cv11', 'tnum' 0;
-    line-height: 1.55;
+    line-height: 1.65;
   }
 
-  /*
-   * Display type: Newsreader with optical sizing, so large headlines get the
-   * high-contrast display cut and small ones stay sturdy.
-   */
+  /* Headings: Poppins semibold in Bridge blue, tightened slightly at size. */
   h1,
   h2 {
-    @apply font-serif font-medium text-navy-950;
-    font-optical-sizing: auto;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
+    @apply font-sans font-semibold text-navy-950;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
     text-wrap: balance;
   }
 
@@ -79,11 +74,11 @@
   /* ---- Buttons ---------------------------------------------------------- */
 
   .btn {
-    @apply relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2.5 text-sm font-medium tracking-[-0.005em] transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-out active:translate-y-px disabled:pointer-events-none disabled:opacity-50;
+    @apply relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium tracking-[-0.005em] transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-out active:translate-y-px disabled:pointer-events-none disabled:opacity-50;
   }
 
   .btn-primary {
-    @apply btn bg-ink text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_1px_2px_rgb(13_31_63/0.2)] hover:bg-ink-3 dark:bg-teal-500 dark:text-muted-50 dark:hover:bg-teal-400;
+    @apply btn bg-ink text-white hover:bg-ink-2 dark:bg-navy-500 dark:text-muted-50 dark:hover:bg-navy-600;
   }
 
   .btn-secondary {
@@ -100,7 +95,7 @@
 
   /* Large call-to-action on ink surfaces. */
   .btn-light {
-    @apply btn bg-white px-6 py-3.5 text-[15px] font-semibold text-ink hover:bg-[#d6f1ed];
+    @apply btn bg-white px-6 py-3.5 text-[15px] font-semibold text-ink hover:bg-blue-100;
   }
 
   .btn-outline-light {
@@ -132,14 +127,8 @@
     @apply rounded-lg border border-muted-200 bg-surface transition-[border-color,box-shadow,transform] duration-300 ease-out hover:-translate-y-0.5 hover:border-muted-300 hover:shadow-card-hover;
   }
 
-  /* Fine film grain for ink surfaces. Parent needs `relative`. */
   .grain {
     @apply relative isolate;
-  }
-  .grain::before {
-    content: '';
-    @apply pointer-events-none absolute inset-0 -z-10 opacity-[0.16] mix-blend-overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   /* ---- Navigation (dashboards) ----------------------------------------- */
@@ -164,8 +153,7 @@
   }
 
   .display {
-    @apply font-serif font-medium tracking-[-0.025em];
-    font-optical-sizing: auto;
+    @apply font-sans font-semibold tracking-[-0.025em];
   }
 
   .prose-rb p {
@@ -178,6 +166,6 @@
   }
 
   .brand-rule {
-    @apply h-px bg-gradient-to-r from-brand-900 via-blue-400 to-transparent;
+    @apply h-px bg-navy-300;
   }
 }

@@ -1,58 +1,50 @@
 import { Link } from 'react-router-dom';
+import { AtomMark } from '@/components/Atom';
 
 interface BrandLogoProps {
   href?: string;
+  /** `light` for blue surfaces, `dark` for light surfaces. */
   variant?: 'light' | 'dark';
   size?: 'sm' | 'md' | 'lg';
   showTagline?: boolean;
 }
 
-const sizeClasses = {
-  sm: 'h-8 w-8',
-  md: 'h-10 w-10',
-  lg: 'h-16 w-16',
+const markSize = { sm: 'h-9 w-9', md: 'h-11 w-11', lg: 'h-16 w-16' };
+const wordSize = {
+  sm: ['text-[0.6rem]', 'text-[1.05rem]'],
+  md: ['text-[0.68rem]', 'text-[1.2rem]'],
+  lg: ['text-[0.85rem]', 'text-[1.6rem]'],
 };
 
-export function BrandLogo({
-  href = '/',
-  variant = 'dark',
-  size = 'md',
-  showTagline = false,
-}: BrandLogoProps) {
+/** The Research Bridge lockup: atom mark plus the two-weight wordmark. */
+export function BrandLogo({ href = '/', variant = 'dark', size = 'md', showTagline = false }: BrandLogoProps) {
+  const onBlue = variant === 'light';
   const content = (
     <div className="flex items-center gap-3">
-      <img
-        src={`${import.meta.env.BASE_URL}Research_Bridge_Logo-selection.png`}
-        alt="Research Bridge"
-        className={`${sizeClasses[size]} shrink-0 rounded-full object-cover`}
-      />
+      <AtomMark className={`${markSize[size]} shrink-0`} tone={onBlue ? 'light' : 'blue'} />
       <div className="leading-none">
         <span
-          className={`block text-[0.68rem] font-medium uppercase tracking-[0.24em] ${
-            variant === 'light' ? 'text-blue-100' : 'text-navy-500'
-          }`}
+          className={`block font-light tracking-[0.28em] ${wordSize[size][0]} ${onBlue ? 'text-[#d9d9d8]' : 'text-navy-600'}`}
         >
-          Research
+          RESEARCH
         </span>
-        <span
-          className={`mt-1 block text-lg font-bold uppercase tracking-[0.08em] ${
-            variant === 'light' ? 'text-white' : 'text-navy-900'
-          }`}
-        >
-          Bridge
+        <span className={`mt-0.5 block font-bold tracking-[0.02em] ${wordSize[size][1]} ${onBlue ? 'text-white' : 'text-navy-950'}`}>
+          BRIDGE
         </span>
         {showTagline && (
-          <span
-            className={`mt-1.5 block text-xs tracking-wide ${
-              variant === 'light' ? 'text-blue-200' : 'text-muted-500'
-            }`}
-          >
-            From Curiosity to Discovery.
+          <span className={`mt-1.5 block text-xs ${onBlue ? 'text-blue-200' : 'text-muted-500'}`}>
+            From curiosity to discovery.
           </span>
         )}
       </div>
     </div>
   );
 
-  return href ? <Link to={href}>{content}</Link> : content;
+  return href ? (
+    <Link to={href} aria-label="Research Bridge home">
+      {content}
+    </Link>
+  ) : (
+    content
+  );
 }

@@ -4,7 +4,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, ArrowUpRight, Download, ExternalLink, FileText } from 'lucide-react';
 import { PageMasthead } from '@/layouts/PublicLayout';
 import { Spinner } from '@/components/ui';
-import { BridgeArch, EASE, Reveal } from '@/components/editorial';
+import { EASE, Reveal } from '@/components/editorial';
+import { AtomMark } from '@/components/Atom';
 import { FEATURES } from '@/config/features';
 import { RESEARCH_CATEGORIES, CATEGORY_SHORT, type CompetitionCategory } from '@/config/competition';
 import { awardLabel, fetchGallery, signedFileUrl } from '@/lib/competition';
@@ -52,16 +53,15 @@ export function GalleryPage() {
         intro="Posters and abstracts from participants who agreed to share their work, organized by research field."
       />
 
-      <div className="mx-auto max-w-7xl px-5 pb-28 sm:px-8">
+      <div className="mx-auto max-w-6xl px-5 pb-28 sm:px-8">
         {projects === null ? (
           <div className="flex justify-center border-t border-muted-200 py-24">
             <Spinner />
           </div>
         ) : projects.length === 0 ? (
-          <Reveal className="grid items-center gap-12 border-t border-muted-300 py-20 lg:grid-cols-[11rem_1fr_1fr] lg:gap-x-12">
-            <p className="text-[13px] font-medium text-muted-500">Status</p>
+          <Reveal className="grid items-center gap-12 py-20 lg:grid-cols-[1fr_auto] lg:gap-x-16">
             <div>
-              <h2 className="text-4xl md:text-5xl">The gallery opens with the results.</h2>
+              <h2 className="text-3xl md:text-[2.6rem]">The gallery opens with the results</h2>
               <p className="mt-5 max-w-md text-lg leading-relaxed text-muted-600">
                 Approved posters and abstracts appear here after judging. Only work whose authors consented to public
                 display is shown.
@@ -70,9 +70,7 @@ export function GalleryPage() {
                 Read the submission guidelines
               </Link>
             </div>
-            <div className="hidden h-40 rounded-md bg-ink p-8 lg:block">
-              <BridgeArch animate={false} traveller={false} stroke="faint" />
-            </div>
+            <AtomMark className="hidden h-44 w-44 lg:block" />
           </Reveal>
         ) : (
           <>
