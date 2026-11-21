@@ -1,12 +1,12 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, Menu, X } from 'lucide-react';
+import { ArrowUpRight, Menu, X } from 'lucide-react';
 import { AnimatedOutlet } from '@/components/PageTransition';
 import { useAuth } from '@/contexts/AuthContext';
 import { BrandLogo } from '@/components/BrandLogo';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { BridgeArch, EASE, Reveal } from '@/components/editorial';
+import { EASE } from '@/components/editorial';
 import { COMPETITION } from '@/config/competition';
 
 const NAV = [
@@ -62,8 +62,8 @@ export function PublicLayout() {
       <header
         className={`sticky top-0 z-40 transition-[background-color,border-color,box-shadow] duration-300 ${
           scrolled || open
-            ? 'border-b border-muted-200 bg-muted-50/90 backdrop-blur-xl'
-            : 'border-b border-transparent bg-muted-50'
+            ? 'border-b border-muted-200 bg-surface/90 backdrop-blur-xl'
+            : 'border-b border-muted-200 bg-surface'
         }`}
       >
         <div
@@ -108,7 +108,7 @@ export function PublicLayout() {
             </Link>
             {!user && (
               <Link to="/register" className="btn-primary group">
-                Register <ArrowRight className="arrow" />
+                Register
               </Link>
             )}
           </div>
@@ -155,7 +155,7 @@ export function PublicLayout() {
                   >
                     {({ isActive }) => (
                       <>
-                        <span className="display text-4xl">{item.label}</span>
+                        <span className="text-3xl font-semibold">{item.label}</span>
                         {isActive && <span className="h-2 w-2 rounded-full bg-teal-500" />}
                       </>
                     )}
@@ -200,24 +200,13 @@ export function PublicLayout() {
 function SiteFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="grain overflow-hidden bg-ink text-blue-100">
-      <div className="mx-auto max-w-7xl px-5 pt-20 sm:px-8">
-        <Reveal className="grid items-end gap-10 border-b border-white/10 pb-16 lg:grid-cols-[1.4fr_1fr]">
-          <p className="display text-5xl leading-[1.02] text-white sm:text-6xl lg:text-7xl">
-            From curiosity
-            <br />
-            to discovery.
-          </p>
-          <div className="h-28 w-full max-w-sm justify-self-start lg:justify-self-end">
-            <BridgeArch animate={false} traveller={false} stroke="faint" />
-          </div>
-        </Reveal>
-
-        <div className="grid gap-12 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+    <footer className="bg-ink text-blue-100">
+      <div className="mx-auto max-w-7xl px-5 pt-16 sm:px-8">
+        <div className="grid gap-12 pb-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="max-w-xs">
-            <BrandLogo variant="light" size="sm" />
-            <p className="mt-5 text-sm leading-relaxed text-blue-200">
-              {COMPETITION.name}. Students from any country submit original research, scored by professional judges.
+            <BrandLogo variant="light" size="md" />
+            <p className="mt-6 text-sm leading-relaxed text-blue-200">
+              From curiosity to discovery. {COMPETITION.name} for school students in any country, judged by professionals.
             </p>
           </div>
           <FooterCol title="Competition">
@@ -246,7 +235,7 @@ function SiteFooter() {
           </FooterCol>
         </div>
 
-        <div className="flex flex-col gap-2 border-t border-white/10 py-6 text-[13px] text-blue-300 sm:flex-row sm:justify-between">
+        <div className="flex flex-col gap-2 border-t border-white/15 py-6 text-[13px] text-blue-200 sm:flex-row sm:justify-between">
           <span>© {year} Research Bridge</span>
           <span>{COMPETITION.edition}</span>
         </div>
@@ -258,7 +247,7 @@ function SiteFooter() {
 function FooterCol({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
-      <h4 className="mb-5 text-[13px] font-medium text-aqua-300">{title}</h4>
+      <h4 className="mb-4 text-sm font-semibold text-white">{title}</h4>
       <div className="flex flex-col items-start gap-3">{children}</div>
     </div>
   );
@@ -276,70 +265,32 @@ function FooterLink({ to, children }: { to: string; children: ReactNode }) {
 }
 
 /* ----------------------------------------------------------------------------
- * Page masthead — light, editorial, with a margin rail.
+ * Page masthead — title and intro at the top of inner pages. `eyebrow` is
+ * accepted for old call sites but not shown; the nav already says where you are.
  * --------------------------------------------------------------------------*/
 
-export function PageMasthead({ eyebrow, title, intro }: { eyebrow: string; title: string; intro?: string }) {
+export function PageMasthead({ title, intro }: { eyebrow?: string; title: string; intro?: string }) {
   return (
-    <section className="relative overflow-hidden">
-      <div className="mx-auto grid max-w-7xl gap-x-12 gap-y-6 px-5 pb-16 pt-14 sm:px-8 md:pb-24 md:pt-20 lg:grid-cols-[11rem_1fr]">
-        <motion.p
-          className="text-[13px] font-medium text-teal-600 lg:pt-5"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          {eyebrow}
-        </motion.p>
-        <div>
-          <motion.h1
-            className="max-w-4xl text-[3.25rem] leading-[0.98] sm:text-7xl lg:text-[5.5rem]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: EASE }}
-          >
-            {title}
-          </motion.h1>
-          {intro && (
-            <motion.p
-              className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-600 md:text-xl"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: EASE, delay: 0.15 }}
-            >
-              {intro}
-            </motion.p>
-          )}
-        </div>
+    <section className="border-b border-muted-200 bg-surface">
+      <div className="mx-auto max-w-6xl px-5 pb-14 pt-12 sm:px-8 md:pb-20 md:pt-16">
+        <h1 className="max-w-4xl text-4xl sm:text-5xl lg:text-[3.6rem]">{title}</h1>
+        {intro && <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-600 md:text-xl">{intro}</p>}
       </div>
     </section>
   );
 }
 
-/** Faint drafting grid behind ink surfaces. */
+/** Kept for old call sites; blue surfaces no longer carry a background grid. */
 export function HeroBackdrop() {
-  return (
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-0 opacity-[0.07]"
-      style={{
-        backgroundImage:
-          'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
-        backgroundSize: '64px 64px',
-        maskImage: 'linear-gradient(to bottom, black, transparent 85%)',
-        WebkitMaskImage: 'linear-gradient(to bottom, black, transparent 85%)',
-      }}
-    />
-  );
+  return null;
 }
 
 /** Heading for a block inside a page (inner pages). */
-export function SectionHeading({ eyebrow, title, action }: { eyebrow?: string; title: string; action?: ReactNode }) {
+export function SectionHeading({ title, action }: { eyebrow?: string; title: string; action?: ReactNode }) {
   return (
     <div className="mb-10 flex items-end justify-between gap-4">
       <div>
-        {eyebrow && <p className="mb-3 text-[13px] font-medium text-teal-600">{eyebrow}</p>}
-        <h2 className="text-4xl md:text-5xl">{title}</h2>
+        <h2 className="text-3xl md:text-4xl">{title}</h2>
       </div>
       {action}
     </div>

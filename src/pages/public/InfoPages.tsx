@@ -136,17 +136,17 @@ export function ContactPage() {
         intro="About eligibility, submissions or published materials. We aim to reply within two business days."
       />
 
-      <Chapter n="1" label="Write to us">
+      <Chapter n="1" label="Write to us" title="Write to us">
         <div className="grid gap-14 lg:grid-cols-[1fr_1fr]">
           <Reveal>
-            <p className="text-[13px] font-medium text-muted-500">Organizing team</p>
+            <p className="text-muted-600">Email the organizing team:</p>
             {COMPETITION.contactEmail ? (
               <a
                 href={`mailto:${COMPETITION.contactEmail}`}
-                className="group display mt-3 inline-flex items-baseline gap-2 break-all text-3xl text-navy-950 hover:text-teal-700 md:text-5xl"
+                className="group mt-2 inline-flex items-baseline gap-2 text-2xl font-semibold text-navy-950 hover:text-teal-700 sm:text-3xl"
               >
                 {COMPETITION.contactEmail}
-                <ArrowUpRight className="h-6 w-6 shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                <ArrowUpRight className="h-5 w-5 shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
               </a>
             ) : (
               <p className="display mt-3 text-3xl text-navy-950 md:text-5xl">Email address coming soon</p>

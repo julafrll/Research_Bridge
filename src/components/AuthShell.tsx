@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Check } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { HeroBackdrop } from '@/layouts/PublicLayout';
-import { BridgeArch } from '@/components/editorial';
+import { AtomOrbits } from '@/components/Atom';
 import { COMPETITION } from '@/config/competition';
 
 const POINTS = [
@@ -18,22 +17,19 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
   return (
     <div className="grid min-h-screen bg-muted-50 lg:grid-cols-[1fr_1.1fr]">
       {/* Brand panel */}
-      <aside className="grain relative hidden overflow-hidden bg-ink text-white lg:flex lg:flex-col lg:justify-between lg:p-14">
-        <HeroBackdrop />
+      <aside className="relative hidden overflow-hidden bg-ink text-white lg:flex lg:flex-col lg:justify-between lg:p-14">
+        <AtomOrbits animate={false} className="pointer-events-none absolute -right-48 -top-40 h-[36rem] w-[36rem] opacity-60" />
         <div className="relative">
           <BrandLogo variant="light" size="md" />
         </div>
         <div className="relative max-w-md">
-          <div className="mb-10 h-24 w-64">
-            <BridgeArch animate={false} traveller />
-          </div>
-          <p className="text-[13px] font-medium text-aqua-300">{COMPETITION.name}</p>
-          <h2 className="mt-4 text-5xl leading-[1.02] text-white">From curiosity to discovery.</h2>
+          <h2 className="text-5xl leading-[1.08] text-white">From curiosity to discovery.</h2>
+          <p className="mt-4 text-blue-100">{COMPETITION.name}</p>
           <ul className="mt-8 space-y-4">
             {POINTS.map((p) => (
               <li key={p} className="flex items-start gap-3 text-blue-100">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#4daea5]/50">
-                  <Check className="h-3 w-3 text-aqua-200" />
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15">
+                  <Check className="h-3 w-3 text-white" />
                 </span>
                 {p}
               </li>
