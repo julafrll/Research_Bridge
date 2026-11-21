@@ -174,7 +174,7 @@ export function LandingPage() {
       >
         <motion.div
           style={{ x: ax, y: ay }}
-          className="pointer-events-none absolute left-[55%] top-1/2 hidden h-[44rem] w-[44rem] -translate-y-1/2 md:block lg:left-[58%] lg:h-[50rem] lg:w-[50rem]"
+          className="pointer-events-none absolute left-[55%] top-[calc(50%-25rem)] hidden h-[44rem] w-[44rem] md:block lg:left-[58%] lg:top-[calc(50%-29rem)] lg:h-[50rem] lg:w-[50rem]"
         >
           <motion.div
             className="h-full w-full"
