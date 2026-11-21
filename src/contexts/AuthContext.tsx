@@ -8,7 +8,7 @@ import {
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
-import { siteUrl } from '@/lib/site';
+import { initialAuthLinkType, siteUrl } from '@/lib/site';
 import type { Profile, UserRole } from '@/types';
 
 interface AuthContextValue {
@@ -79,6 +79,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // allow-list doesn't include /reset-password — send it to the form.
       if (event === 'PASSWORD_RECOVERY' && !window.location.pathname.endsWith('/reset-password')) {
         window.location.replace(siteUrl('reset-password'));
+        return;
+      }
+      // A confirm-signup or sign-in link can land on the password pages if
+      // Supabase's Site URL points there or the redirect isn't allow-listed.
+      // That isn't a password reset: send the new user to their entry instead.
+      if (
+        event === 'SIGNED_IN' &&
+        initialAuthLinkType &&
+        initialAuthLinkType !== 'recovery' &&
+        /\/(reset|forgot)-password\/?$/.test(window.location.pathname)
+      ) {
+        window.location.replace(siteUrl('competition'));
         return;
       }
       (async () => {
