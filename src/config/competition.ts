@@ -14,7 +14,7 @@ export const COMPETITION = {
     'An international online competition where students submit original research papers and scientific posters. Every project is reviewed by professional judges, and the strongest work is recognized with awards and published in our digital gallery.',
 
   /** Organizers: fill these in. */
-  contactEmail: '',
+  contactEmail: 'researchbridge00@gmail.com',
   instagramHandle: '',
   instagramUrl: '',
   /** e.g. 'December 20, 2026'. Leave empty to show the week-based schedule only. */
