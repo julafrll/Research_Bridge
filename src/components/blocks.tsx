@@ -233,14 +233,25 @@ export function EmailCard({ email }: { email: string }) {
         {email}
       </a>
       <div className="mt-7 flex flex-wrap gap-3">
-        <a href={`mailto:${email}`} className="btn-light px-5 py-2.5 text-sm">
-          Write an email
+        <a
+          href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}`}
+          target="_blank"
+          rel="noreferrer"
+          className="btn-light px-5 py-2.5 text-sm"
+        >
+          Write in Gmail
         </a>
         <button type="button" onClick={copy} className="btn-outline-light px-5 py-2.5 text-sm" aria-live="polite">
           {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
           {copied ? 'Copied' : 'Copy address'}
         </button>
       </div>
+      <p className="mt-4 text-sm text-blue-200">
+        Use another mail app?{' '}
+        <a href={`mailto:${email}`} className="font-medium text-white underline underline-offset-2 hover:no-underline">
+          Open it here
+        </a>
+      </p>
     </div>
   );
 }
