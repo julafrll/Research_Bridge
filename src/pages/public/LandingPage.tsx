@@ -206,7 +206,8 @@ export function LandingPage() {
           <HeroFade delay={0.65}>
           <p className="mt-7 max-w-xl text-lg leading-relaxed text-blue-100 md:text-xl md:leading-relaxed">
             Submit an original research paper and a scientific poster from anywhere in the world. Every entry is
-            scored by at least two judges, and the best projects win prizes and a place in our online gallery.
+            scored by at least two judges, the top three win prizes, and approved projects are published in our online
+            gallery.
           </p>
           </HeroFade>
 
@@ -274,7 +275,7 @@ export function LandingPage() {
       <Chapter
         label="Research fields"
         title="Six research fields"
-        intro="Pick the field closest to your work. Experimental, theoretical, computational and literature-review projects all qualify."
+        intro="Pick the field closest to your work. Theoretical, computational and literature-review projects all qualify."
       >
         <ul className="flex flex-wrap gap-3">
           {RESEARCH_CATEGORIES.map((c, i) => {
