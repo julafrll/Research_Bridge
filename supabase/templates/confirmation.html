@@ -1,0 +1,9 @@
+<!-- Supabase "Confirm signup" template — sent after registration.
+     Subject: Confirm your Research Bridge account -->
+<div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #0f1f3d;">
+  <h2 style="margin-bottom: 8px;">Confirm your email</h2>
+  <p>Welcome to the Research Bridge Online Research Paper Competition. Enter this code to activate your account:</p>
+  <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; margin: 24px 0; font-family: monospace;">{{ .Token }}</p>
+  <p>Or <a href="{{ .ConfirmationURL }}">confirm with one click</a>.</p>
+  <p style="color: #5b6b82; font-size: 14px;">The code expires in one hour. If you didn't create an account, you can ignore this email.</p>
+</div>
