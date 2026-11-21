@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowUpRight, Menu, X } from 'lucide-react';
@@ -190,7 +190,44 @@ export function PublicLayout() {
       </main>
 
       <SiteFooter />
+      {!user && <MobileRegisterBar hidden={open} />}
     </div>
+  );
+}
+
+/** Phones only: a register button pinned to the bottom once the visitor scrolls past the top of the page. */
+function MobileRegisterBar({ hidden }: { hidden: boolean }) {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShow(window.scrollY > 520);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  return (
+    <AnimatePresence>
+      {show && !hidden && (
+        <motion.div
+          className="fixed inset-x-0 bottom-0 z-30 border-t border-muted-200 bg-surface/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl lg:hidden"
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ duration: 0.35, ease: EASE }}
+        >
+          <div className="mx-auto flex max-w-md items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-navy-950">
+                {COMPETITION.submissionsOpen ? 'Submissions are open' : 'Submissions are closed'}
+              </p>
+              <p className="truncate text-xs text-muted-500">Top prize $250</p>
+            </div>
+            <Link to="/register" className="btn-primary shrink-0 px-5 py-2.5">
+              Register
+            </Link>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -202,9 +239,9 @@ function SiteFooter() {
   const year = new Date().getFullYear();
   return (
     <footer className="bg-ink text-blue-100">
-      <div className="mx-auto max-w-7xl px-5 pt-16 sm:px-8">
-        <div className="grid gap-12 pb-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
-          <div className="max-w-xs">
+      <div className="mx-auto max-w-7xl px-5 pt-12 sm:px-8 sm:pt-16">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 pb-12 sm:gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:pb-14">
+          <div className="col-span-2 max-w-xs lg:col-span-1">
             <BrandLogo variant="light" size="md" />
             <p className="mt-6 text-sm leading-relaxed text-blue-200">
               From curiosity to discovery. {COMPETITION.name} for school students in any country, judged by professionals.
@@ -236,7 +273,7 @@ function SiteFooter() {
           </FooterCol>
         </div>
 
-        <div className="flex flex-col gap-2 border-t border-white/15 py-6 text-[13px] text-blue-200 sm:flex-row sm:justify-between">
+        <div className="flex flex-col gap-2 border-t border-white/15 pb-24 pt-6 text-[13px] text-blue-200 sm:flex-row sm:justify-between lg:pb-6">
           <span>© {year} Research Bridge</span>
           <span>{COMPETITION.edition}</span>
         </div>
@@ -333,6 +370,14 @@ function SectionNav({ sections }: { sections: PageSection[] }) {
     return () => observer.disconnect();
   }, [sections]);
 
+  // Keep the highlighted pill visible when the row is wider than the screen.
+  const rowRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const row = rowRef.current;
+    const pill = row?.querySelector<HTMLElement>(`[data-section="${active}"]`);
+    if (row && pill) row.scrollTo({ left: pill.offsetLeft - row.clientWidth / 2 + pill.offsetWidth / 2, behavior: 'smooth' });
+  }, [active]);
+
   const go = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     history.replaceState(null, '', `#${id}`);
@@ -340,12 +385,13 @@ function SectionNav({ sections }: { sections: PageSection[] }) {
 
   return (
     <nav aria-label="On this page" className="sticky top-16 z-30 border-b border-muted-200 bg-surface/90 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-5 py-2.5 sm:px-8 [scrollbar-width:none]">
+      <div ref={rowRef} className="relative mx-auto flex max-w-6xl gap-1 overflow-x-auto px-5 py-2.5 sm:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {sections.map((s) => {
           const isActive = active === s.id;
           return (
             <a
               key={s.id}
+              data-section={s.id}
               href={`#${s.id}`}
               onClick={(e) => {
                 e.preventDefault();

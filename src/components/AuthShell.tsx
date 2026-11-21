@@ -41,19 +41,32 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
 
       {/* Form panel */}
       <main className="flex flex-col">
-        <div className="flex items-center justify-between px-4 py-4 sm:px-8">
+        {/* Phones and tablets: a short blue brand band instead of the side panel */}
+        <div className="relative overflow-hidden bg-ink px-4 pb-8 pt-4 text-white sm:px-8 lg:hidden">
+          <AtomOrbits animate={false} className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 opacity-50" />
+          <div className="relative flex items-center justify-between">
+            <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-blue-100 hover:text-white">
+              <ArrowLeft className="h-4 w-4" /> Back to site
+            </Link>
+            <span className="rounded-full bg-white/10 [&_button]:text-white">
+              <ThemeToggle />
+            </span>
+          </div>
+          <div className="relative mt-6">
+            <BrandLogo variant="light" size="md" href="" />
+            <p className="mt-3 text-sm text-blue-100">From curiosity to discovery.</p>
+          </div>
+        </div>
+        <div className="hidden items-center justify-between px-4 py-4 sm:px-8 lg:flex">
           <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-500 hover:text-navy-900">
             <ArrowLeft className="h-4 w-4" /> Back to site
           </Link>
           <ThemeToggle />
         </div>
-        <div className="flex flex-1 items-center justify-center px-4 pb-16 pt-4 sm:px-8">
+        <div className="flex flex-1 items-start justify-center px-4 pb-16 pt-8 sm:px-8 lg:items-center lg:pt-4">
           <div className="w-full max-w-md animate-slide-up">
-            <div className="mb-8 lg:hidden">
-              <BrandLogo size="md" />
-            </div>
-            <h1 className="text-4xl md:text-5xl">{title}</h1>
-            {subtitle && <p className="mt-3 text-[17px] leading-relaxed text-muted-600">{subtitle}</p>}
+            <h1 className="text-[2rem] sm:text-4xl md:text-5xl">{title}</h1>
+            {subtitle && <p className="mt-3 text-base leading-relaxed text-muted-600 sm:text-[17px]">{subtitle}</p>}
             <div className="mt-8">{children}</div>
           </div>
         </div>
