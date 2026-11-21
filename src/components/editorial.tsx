@@ -5,7 +5,7 @@
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { animate, motion, useInView, useReducedMotion, type Variants } from 'framer-motion';
-import { AtomOrbits } from '@/components/Atom';
+import { AtomMark, AtomOrbits } from '@/components/Atom';
 import { AWARDS, RUBRIC, STAGES } from '@/config/competition';
 
 export const EASE = [0.22, 1, 0.36, 1] as const;
@@ -343,35 +343,86 @@ export function RubricFigure() {
 }
 
 /* ----------------------------------------------------------------------------
- * Awards: first to third, prize on the right.
+ * Awards podium: 2nd, 1st, 3rd on steps of different heights. The steps rise
+ * from the floor when scrolled into view, then the prizes count up.
  * --------------------------------------------------------------------------*/
 
+const PODIUM_ORDER = [1, 0, 2] as const; // indexes into AWARDS: 2nd, 1st, 3rd
+const STEP_HEIGHT = ['h-44 sm:h-60 lg:h-72', 'h-32 sm:h-44 lg:h-52', 'h-24 sm:h-32 lg:h-36'];
+const STEP_COLOR = ['bg-ink', 'bg-[#56709c]', 'bg-[#7c94b8]'];
+// Rise order by place: 3rd, then 2nd, then 1st last and tallest.
+const STEP_DELAY = [0.35, 0.18, 0];
+
 export function Podium({ winners }: { winners?: Partial<Record<string, ReactNode>> }) {
+  const reduce = useReducedMotion();
   return (
-    <ol className="divide-y divide-muted-200 overflow-hidden rounded-xl border border-muted-200 bg-surface">
-      {AWARDS.map((a, i) => (
-        <Reveal
-          as="li"
-          key={a.key}
-          delay={0.1 * i}
-          className="group grid grid-cols-[auto_1fr_auto] items-center gap-5 px-5 py-6 transition-colors duration-300 hover:bg-navy-50 sm:gap-8 sm:px-8"
-        >
-          <span
-            className={`flex h-12 w-12 items-center justify-center rounded-full text-lg font-semibold transition-transform duration-300 group-hover:scale-110 ${
-              i === 0 ? 'bg-ink text-white' : 'bg-navy-100 text-navy-950'
-            }`}
-          >
-            {i + 1}
-          </span>
-          <div>
-            <p className="text-lg font-semibold text-navy-950">{a.title}</p>
-            <p className="text-sm text-muted-500">{a.place}</p>
-            {winners?.[a.key] && <div className="mt-3">{winners[a.key]}</div>}
-          </div>
-          <CountUp value={a.prize} className="text-3xl font-semibold tabular-nums text-navy-950 sm:text-4xl" />
-        </Reveal>
-      ))}
-    </ol>
+    <div className="mx-auto max-w-4xl">
+      <ol className="grid grid-cols-3 items-end gap-2 sm:gap-4">
+        {PODIUM_ORDER.map((place) => {
+          const a = AWARDS[place];
+          const first = place === 0;
+          const delay = STEP_DELAY[place];
+          return (
+            <li key={a.key} className="group flex flex-col items-center text-center">
+              {/* What's on the step: medal, prize, title, winner */}
+              <motion.div
+                className="mb-4 flex w-full flex-col items-center px-1 sm:mb-5"
+                initial={reduce ? false : { opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.6, ease: EASE, delay: delay + 0.55 }}
+              >
+                <div className="flex flex-col items-center transition-transform duration-300 group-hover:-translate-y-1.5">
+                  {first && (
+                    <motion.div
+                      className="mb-3"
+                      animate={reduce ? undefined : { y: [0, -6, 0] }}
+                      transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <AtomMark className="h-10 w-10 drop-shadow-md sm:h-14 sm:w-14" />
+                    </motion.div>
+                  )}
+                  <CountUp
+                    value={a.prize}
+                    className={`font-semibold tabular-nums text-navy-950 ${
+                      first ? 'text-3xl sm:text-5xl lg:text-6xl' : 'text-2xl sm:text-4xl lg:text-5xl'
+                    }`}
+                  />
+                  <p className="mt-1.5 text-xs font-semibold leading-snug text-navy-950 sm:text-base">{a.title}</p>
+                  {winners?.[a.key] && <div className="mt-3 w-full text-left">{winners[a.key]}</div>}
+                </div>
+              </motion.div>
+
+              {/* The step */}
+              <motion.div
+                className={`relative w-full overflow-hidden rounded-t-2xl ${STEP_HEIGHT[place]} ${STEP_COLOR[place]}`}
+                style={{ originY: 1 }}
+                initial={reduce ? false : { scaleY: 0 }}
+                whileInView={{ scaleY: 1 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.8, ease: EASE, delay }}
+              >
+                {/* top highlight, like light catching the edge of the step */}
+                <span className="absolute inset-x-0 top-0 h-1.5 bg-white/25" aria-hidden />
+                <span
+                  className={`absolute inset-x-0 top-3 text-center font-semibold leading-none text-white/90 sm:top-5 ${
+                    first ? 'text-6xl sm:text-8xl' : 'text-5xl sm:text-7xl'
+                  }`}
+                  aria-hidden
+                >
+                  {place + 1}
+                </span>
+                <span className="absolute inset-x-0 bottom-3 text-center text-[11px] font-medium text-white/75 sm:bottom-4 sm:text-sm">
+                  {a.place}
+                </span>
+              </motion.div>
+            </li>
+          );
+        })}
+      </ol>
+      {/* floor */}
+      <div className="h-3 rounded-b-xl bg-[#d9d9d8] dark:bg-muted-200" aria-hidden />
+    </div>
   );
 }
 

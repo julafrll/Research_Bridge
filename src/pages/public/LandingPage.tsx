@@ -319,9 +319,7 @@ export function LandingPage() {
         title="Awards"
         intro="The top three projects win cash prizes. Every participant receives a digital certificate, and approved projects are published in the online gallery."
       >
-        <div className="max-w-3xl">
-          <Podium />
-        </div>
+        <Podium />
       </Chapter>
 
       {/* Closing ------------------------------------------------------------ */}
